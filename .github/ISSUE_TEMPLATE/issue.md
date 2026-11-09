@@ -7,4 +7,4 @@ assignees: ''
 
 ---
 
-Please do all work for this task in a branch named issue-XXX.
+Do all work for this task in a branch called issue-XX
