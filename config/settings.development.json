@@ -8,5 +8,9 @@
     { "name": "Bicycle", "quantity": 2, "owner": "john@foo.com", "condition": "poor" },
     { "name": "Banana", "quantity": 2, "owner": "admin@foo.com", "condition": "good" },
     { "name": "Boogie Board", "quantity": 2, "owner": "admin@foo.com", "condition": "excellent" }
+  ],
+  "defaultCourses": [
+    { "courseCode": "ICS 314", "courseName": "Software Engineering I", "rating": 4.5, "instructor": ["David Brookshire Conner", "Italos Santos"], "semeseter":["Fall 2026", "Spring 2027"]},
+    { "courseCode": "ICS 311", "courseName": "Algorithms", "rating": 4, "instructor": ["Kyle Berney"], "semeseter":["Fall 2026"]}
   ]
 }

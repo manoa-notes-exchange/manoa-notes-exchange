@@ -36,6 +36,19 @@ async function main() {
       },
     });
   }
+  for (const data of config.defaultCourses) {
+    console.log(`  Adding course: ${JSON.stringify(data)}`);
+    await prisma.course.upsert({
+      where: { id: config.defaultCourses.indexOf(data) + 1 },
+      update: {},
+      create: {
+        courseCode: data.courseCode,
+        courseName: data.courseName,
+        rating: data.rating,
+        semester: data.semeseter,
+      },
+    });
+  }
 }
 main()
   .then(() => prisma.$disconnect())

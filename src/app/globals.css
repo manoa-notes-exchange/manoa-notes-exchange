@@ -21,6 +21,19 @@ body {
   display: flex;
   flex-direction: column;
 }
+.stars {
+  color: #f5a400;
+  font-size: 1rem;
+  letter-spacing: -1px;
+}
+.halfStar {
+  background: linear-gradient(90deg, #f5a400 50%, #b8bdc1 50%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.emptyStars {
+  color: #f5a400;
+}
 
 /* Changes Bootstrap's bg-dark background to Manoa green. */
 .bg-dark {
