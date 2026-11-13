@@ -18,7 +18,7 @@ const CourseSearchForm = ({
   semesters,
   semester,
 }: CourseSearchFormProps) => (
-  <Form action="/courses" method="get" className="border rounded p-3">
+  <Form action="/search" method="get" className="border rounded p-3">
     <Row className="g-3 align-items-end">
       <Col xs={12} md={6} lg={3}>
         <Form.Group controlId="department">
