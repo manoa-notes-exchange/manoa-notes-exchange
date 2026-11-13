@@ -1,4 +1,5 @@
 import { Container } from 'react-bootstrap';
+import Link from 'next/link';
 
 /** The Footer appears at the bottom of every page. */
 const Footer = () => (
@@ -8,9 +9,9 @@ const Footer = () => (
         This project is not affiliated with the University of Hawaiʻi.
       </p>
 
-      <a className="footer-link me-3" href="/">
+      <Link className="footer-link me-3" href="/">
         Manoa Notes Exchange
-      </a>
+      </Link>
 
       <a
         className="footer-link"
