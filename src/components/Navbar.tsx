@@ -20,7 +20,7 @@ const NavBar: React.FC = () => {
   const role = session?.user?.role;
 
   return (
-    <Navbar bg="dark" data-bs-theme="dark" expand="lg">
+    <Navbar bg="dark" data-bs-theme="dark" expand="lg" className="floral-navbar">
       <Container>
         <Navbar.Brand href="/">
           Manoa Notes Exchange
@@ -42,8 +42,8 @@ const NavBar: React.FC = () => {
 
                 <Nav.Link
                   id="search-courses-nav"
-                  href="/courses"
-                  active={pathName === '/courses'}
+                  href="/courses/ics-314"
+                  active={pathName.startsWith('/courses')}
                 >
                   Search Courses
                 </Nav.Link>
