@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 /** The Footer appears at the bottom of every page. */
 const Footer = () => (
-  <footer className="mt-auto py-3 bg-dark text-white">
+  <footer className="mt-auto py-4 bg-dark text-white floral-footer">
     <Container className="text-center">
       <p className="mb-2">
         This project is not affiliated with the University of Hawaiʻi.
