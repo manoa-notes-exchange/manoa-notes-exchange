@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+// @ts-expect-error Next.js handles Bootstrap global CSS imports at build time.
 import 'bootstrap/dist/css/bootstrap.min.css';
+// @ts-expect-error Next.js handles global CSS imports at build time.
 import "./globals.css";
 import Footer from '@/components/Footer';
 import NavBar from '@/components/Navbar';
