@@ -1,26 +1,69 @@
-import { Container } from 'react-bootstrap';
 import Link from 'next/link';
+import { Col, Container, Row } from 'react-bootstrap';
 
-/** The Footer appears at the bottom of every page. */
 const Footer = () => (
   <footer className="mt-auto py-4 bg-dark text-white floral-footer">
-    <Container className="text-center">
-      <p className="mb-2">
-        This project is not affiliated with the University of Hawaiʻi.
+    <Container>
+      <Row className="g-4">
+        <Col xs={12} md={6} lg={5}>
+          <h5>MANOA NOTES EXCHANGE</h5>
+
+          <p className="text-white-50 mb-0">
+            Free study materials for UH Mānoa courses, shared by students.
+            A student project, not affiliated with the University of Hawaiʻi.
+          </p>
+        </Col>
+
+        <Col xs={12} md={3} lg={{ span: 3, offset: 1 }}>
+          <h5>EXPLORE</h5>
+
+          <div>
+            <Link className="footer-link" href="/courses">
+              Search Courses
+            </Link>
+          </div>
+
+          <div>
+            <Link className="footer-link" href="/upload">
+              Upload Material
+            </Link>
+          </div>
+
+          <div>
+            <Link className="footer-link" href="/privacy">
+              Privacy
+            </Link>
+          </div>
+        </Col>
+
+        <Col xs={12} md={3}>
+          <h5>PROJECT</h5>
+
+          <div>
+            <a
+              className="footer-link"
+              href="#"
+            >
+              Project Home Page
+            </a>
+          </div>
+
+          <div>
+            <a
+              className="footer-link"
+              href="#"
+            >
+              GitHub Organization
+            </a>
+          </div>
+        </Col>
+      </Row>
+
+      <hr className="my-4" />
+
+      <p className="text-center text-white-50 mb-0">
+        ICS 314, Fall 2026
       </p>
-
-      <Link className="footer-link me-3" href="/">
-        Manoa Notes Exchange
-      </Link>
-
-      <a
-        className="footer-link"
-        href="https://github.com/"
-        target="_blank"
-        rel="noreferrer"
-      >
-        GitHub Project
-      </a>
     </Container>
   </footer>
 );
