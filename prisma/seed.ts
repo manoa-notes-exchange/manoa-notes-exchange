@@ -1,8 +1,10 @@
 import { PrismaClient, Role, Condition } from '@prisma/client';
 import { hash } from 'bcrypt';
+import { PrismaPg } from '@prisma/adapter-pg';
 import * as config from '../config/settings.development.json';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log('Seeding the database');
@@ -34,6 +36,19 @@ async function main() {
         quantity: data.quantity,
         owner: data.owner,
         condition,
+      },
+    });
+  }
+  for (const data of config.defaultCourses) {
+    console.log(`  Adding course: ${JSON.stringify(data)}`);
+    await prisma.course.upsert({
+      where: { id: config.defaultCourses.indexOf(data) + 1 },
+      update: {},
+      create: {
+        courseCode: data.courseCode,
+        courseName: data.courseName,
+        rating: data.rating,
+        semester: data.semeseter,
       },
     });
   }
