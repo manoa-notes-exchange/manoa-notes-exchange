@@ -13,6 +13,10 @@ const Footer = () => (
         Manoa Notes Exchange
       </Link>
 
+      <Link className="footer-link me-3" href="/privacy">
+        Privacy
+      </Link>
+
       <a
         className="footer-link"
         href="https://github.com/"
