@@ -12,22 +12,27 @@ test('can authenticate a specific user', async ({ getUserPage }) => {
     customUserPage.getByRole('button', { name: 'john@foo.com' })
   ).toBeVisible({ timeout: 10000 });
 
-  // Now check for navigation links and headings
+  // Check the shared navbar from #2. Search inside the navbar only,
+  // because the footer also has a 'Manoa Notes Exchange' link.
+  const navbar = customUserPage.getByRole('navigation');
   await expect(
-    customUserPage.getByRole('link', { name: 'Add Stuff' })
+    navbar.getByRole('link', { name: 'Manoa Notes Exchange' })
   ).toBeVisible({ timeout: 5000 });
   await expect(
-    customUserPage.getByRole('link', { name: 'List Stuff' })
+    navbar.getByRole('link', { name: 'My Home' })
+  ).toBeVisible({ timeout: 5000 });
+  await expect(
+    navbar.getByRole('link', { name: 'Search Courses' })
+  ).toBeVisible({ timeout: 5000 });
+  await expect(
+    navbar.getByRole('link', { name: 'Upload' })
   ).toBeVisible({ timeout: 5000 });
 
-  await customUserPage.getByRole('link', { name: 'Add Stuff' }).click();
+  // A regular user should not see the Admin link
   await expect(
-    customUserPage.getByRole('heading', { name: 'Add Stuff' })
-  ).toBeVisible({ timeout: 5000 });
+    navbar.getByRole('link', { name: 'Admin' })
+  ).toHaveCount(0);
 
-  await customUserPage.getByRole('link', { name: 'List Stuff' }).click();
-  await expect(
-    customUserPage.getByRole('heading', { name: 'Stuff' })
-  ).toBeVisible({ timeout: 5000 });
+  // Page checks (click each link, check its heading) get added in #13 once the pages exist
 
 });
