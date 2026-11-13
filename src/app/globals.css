@@ -1,3 +1,11 @@
+:root {
+  --manoa-green: #024731;
+  --manoa-medium-green: #237b64;
+  --manoa-light-green: #b7d7c8;
+  --manoa-white: #ffffff;
+  --manoa-gold: #fdbb30;
+}
+
 html,
 body {
   --bs-light-rgb: 236, 236, 236;
@@ -6,6 +14,7 @@ body {
   padding: 0;
   margin: 0;
 }
+
 .wrapper {
   box-sizing: border-box;
   min-height: 100%;
@@ -24,4 +33,218 @@ body {
 }
 .emptyStars {
   color: #f5a400;
+}
+
+/* Changes Bootstrap's bg-dark background to Manoa green. */
+.bg-dark {
+  background-color: var(--manoa-green) !important;
+}
+
+/* Navbar colors. */
+.navbar[data-bs-theme="dark"] {
+  --bs-navbar-brand-color: var(--manoa-white);
+  --bs-navbar-brand-hover-color: var(--manoa-light-green);
+  --bs-navbar-color: var(--manoa-white);
+  --bs-navbar-hover-color: var(--manoa-light-green);
+  --bs-navbar-active-color: var(--manoa-white);
+}
+
+.navbar .nav-link.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* Footer colors. */
+footer {
+  background-color: var(--manoa-green);
+  color: var(--manoa-white);
+}
+
+.footer-link {
+  color: var(--manoa-white);
+}
+
+.footer-link:hover {
+  color: var(--manoa-light-green);
+}
+
+/* Dropdown colors. */
+.dropdown-menu {
+  background-color: var(--manoa-white);
+}
+
+.dropdown-menu .dropdown-item {
+  color: black;
+}
+
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus {
+  color: black;
+  background-color: var(--manoa-light-green);
+}
+
+/* Reusable green section. */
+.project-green {
+  background-color: var(--manoa-green);
+  color: var(--manoa-white);
+}
+
+/* Course details page. */
+.course-page {
+  max-width: 1400px;
+}
+
+.course-page .breadcrumb a {
+  color: var(--manoa-medium-green);
+}
+
+.course-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+
+.star-rating {
+  color: var(--manoa-gold);
+  font-size: 1.25rem;
+  white-space: nowrap;
+}
+
+/* Course resource cards. */
+.resource-card,
+.sidebar-card {
+  border-color: #d6d6d6;
+  border-radius: 8px;
+}
+
+.resource-title {
+  color: var(--manoa-medium-green);
+  font-size: 1.3rem;
+}
+
+.resource-badge {
+  background-color: var(--manoa-medium-green) !important;
+}
+
+.resource-button {
+  color: var(--manoa-medium-green);
+  border-color: var(--manoa-medium-green);
+}
+
+.resource-button:hover,
+.resource-button:focus {
+  color: var(--manoa-white);
+  background-color: var(--manoa-medium-green);
+  border-color: var(--manoa-medium-green);
+}
+
+.report-button {
+  color: #dc3545;
+}
+
+.report-button:hover,
+.report-button:focus {
+  color: #a71d2a;
+}
+
+/* Right-side cards. */
+.sidebar-card .card-header {
+  background-color: #f8f8f8;
+}
+
+.sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #dddddd;
+}
+
+.sidebar-row:last-child {
+  border-bottom: 0;
+}
+
+/* Green submit button. */
+.manoa-button {
+  color: var(--manoa-white);
+  background-color: var(--manoa-medium-green);
+  border-color: var(--manoa-medium-green);
+}
+
+.manoa-button:hover,
+.manoa-button:focus {
+  color: var(--manoa-white);
+  background-color: var(--manoa-green);
+  border-color: var(--manoa-green);
+}
+
+/* Floral Navbar. */
+.floral-navbar {
+  background-color: var(--manoa-green) !important;
+  background-image:
+    linear-gradient(
+      rgba(2, 71, 49, 0.65),
+      rgba(2, 71, 49, 0.65)
+    ),
+    url("/navbar-picture.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-bottom: 3px solid var(--manoa-light-green);
+}
+
+.floral-navbar .navbar-brand,
+.floral-navbar .nav-link,
+.floral-navbar .dropdown-toggle {
+  color: var(--manoa-white) !important;
+  text-shadow: 1px 1px 3px black;
+}
+
+.floral-navbar .navbar-brand {
+  font-weight: 700;
+}
+
+.floral-navbar .navbar-brand:hover,
+.floral-navbar .nav-link:hover,
+.floral-navbar .dropdown-toggle:hover {
+  color: var(--manoa-light-green) !important;
+}
+
+/* Floral Footer. */
+.floral-footer {
+  background-color: var(--manoa-green) !important;
+  background-image:
+    linear-gradient(
+      rgba(2, 71, 49, 0.72),
+      rgba(2, 71, 49, 0.72)
+    ),
+    url("/navbar-picture.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-top: 3px solid var(--manoa-light-green);
+  text-shadow: 1px 1px 3px black;
+}
+
+.floral-footer .footer-link {
+  color: var(--manoa-white);
+  font-weight: 600;
+}
+
+.floral-footer .footer-link:hover {
+  color: var(--manoa-light-green);
+}
+
+/* Mobile layout. */
+@media (max-width: 767px) {
+  .course-title {
+    font-size: 2rem;
+  }
+
+  .resource-badge {
+    margin-left: 10px;
+  }
+
+  .report-button {
+    margin-left: 0 !important;
+  }
 }
