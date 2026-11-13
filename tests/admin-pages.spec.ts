@@ -22,6 +22,6 @@ test('test access to admin page', async ({ getUserPage }) => {
     adminPage.getByRole('heading', { name: 'Admin', exact: true })
   ).toBeVisible({ timeout: 5000 });
   await expect(
-    adminPage.getByRole('heading', { name: 'Reports' })
+    adminPage.getByText('Add a semester offering')
   ).toBeVisible({ timeout: 5000 });
 });
