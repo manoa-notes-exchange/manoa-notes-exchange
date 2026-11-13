@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { Alert, Badge, Button, Card } from 'react-bootstrap';
 import { Bookmark, BookmarkCheck } from 'react-bootstrap-icons';
-import styles from './CourseCard.module.css';
+// import styles from './CourseCard.module.css';
 
 type CourseCardProps = {
   courseCode: string;
@@ -28,52 +29,57 @@ function CourseCard({ courseCode, courseName, rating, semesters }: CourseCardPro
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
   return (
-    <article className={styles.card}>
-      <div className={styles.body}>
-        <h2 className={styles.courseCode}>{courseCode}</h2>
-        <p className={styles.courseName}>{courseName}</p>
-        <div className={styles.semesters}>
+    <Card className="h-100">
+      <Card.Body>
+        <Card.Title as="h2">{courseCode}</Card.Title>
+        <Card.Subtitle as="p" className={`text-muted mb-2`}>
+          {courseName}
+        </Card.Subtitle>
+        <div className="d-flex flex-wrap gap-1 mb-2">
           {semesters.map((semester) => (
-            <span className={styles.semester} key={semester}>{semester}</span>
+            <Badge bg="light" text="dark" className={`border`} key={semester}>
+              {semester}
+            </Badge>
           ))}
         </div>
-        <div className={styles.rating} role="img" aria-label={`Rated ${displayRating} out of 5`}>
-          <span className={styles.stars} aria-hidden="true">
+        <div>
+          <span role="img" aria-label={`Rated ${displayRating} out of 5`} className='stars'>
             {'★'.repeat(fullStars)}
-            {hasHalfStar && <span className={styles.halfStar}>★</span>}
-            <span className={styles.emptyStars}>{'☆'.repeat(emptyStars)}</span>
+            {hasHalfStar && <span className='halfStar'>★</span>}
+            <span className='emptyStars'>{'☆'.repeat(emptyStars)}</span>
           </span>
-          <span className={styles.materialCount}>Materials</span>
+          <span className="ms-1">Materials</span>
         </div>
         {showMaterialsMessage && (
-          <p className={styles.materialsMessage} role="status">
+          <Alert variant="light" className={`border mt-2`} role="status">
             No materials have been shared for this course yet.
-          </p>
+          </Alert>
         )}
-      </div>
-
-      <div className={styles.actions}>
-        <button
+      </Card.Body>
+      <Card.Footer className="bg-white d-flex gap-2">
+        <Button
           type="button"
-          className={styles.viewButton}
+          variant="success"
+          size="sm"
           onClick={() => setShowMaterialsMessage(!showMaterialsMessage)}
           aria-expanded={showMaterialsMessage}
         >
           View materials
-        </button>
+        </Button>
         {currentUser && (
-          <button
+          <Button
             type="button"
-            className={saved ? styles.savedButton : styles.saveButton}
+            variant={saved ? 'success' : 'outline-success'}
+            size="sm"
             onClick={toggleSaved}
             aria-pressed={saved}
           >
             {saved ? <BookmarkCheck aria-hidden="true" /> : <Bookmark aria-hidden="true" />}
-            {saved ? 'Saved' : 'Save'}
-          </button>
-          )}
-      </div>
-    </article>
+            <span className="ms-1">{saved ? 'Saved' : 'Save'}</span>
+          </Button>
+        )}
+      </Card.Footer>
+    </Card>
   );
 }
 
