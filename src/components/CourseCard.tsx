@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { Alert, Badge, Button, Card } from 'react-bootstrap';
+import { Badge, Button, Card } from 'react-bootstrap';
 import { Bookmark, BookmarkCheck } from 'react-bootstrap-icons';
-// import styles from './CourseCard.module.css';
 
 type CourseCardProps = {
   courseCode: string;
@@ -15,7 +14,6 @@ type CourseCardProps = {
 
 function CourseCard({ courseCode, courseName, rating, semesters }: CourseCardProps) {
   const [saved, setSaved] = useState(false);
-  const [showMaterialsMessage, setShowMaterialsMessage] = useState(false);
   const { data: session } = useSession();
   const currentUser = session?.user?.email;
 
@@ -50,19 +48,13 @@ function CourseCard({ courseCode, courseName, rating, semesters }: CourseCardPro
           </span>
           <span className="ms-1">Materials</span>
         </div>
-        {showMaterialsMessage && (
-          <Alert variant="light" className={`border mt-2`} role="status">
-            No materials have been shared for this course yet.
-          </Alert>
-        )}
       </Card.Body>
       <Card.Footer className="bg-white d-flex gap-2">
         <Button
           type="button"
           variant="success"
           size="sm"
-          onClick={() => setShowMaterialsMessage(!showMaterialsMessage)}
-          aria-expanded={showMaterialsMessage}
+          href='/courses'
         >
           View materials
         </Button>
