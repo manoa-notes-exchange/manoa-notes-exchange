@@ -42,8 +42,8 @@ const NavBar: React.FC = () => {
 
                 <Nav.Link
                   id="search-courses-nav"
-                  href="/courses/ics-314"
-                  active={pathName.startsWith('/courses')}
+                  href="/search"
+                  active={pathName.startsWith('/search')}
                 >
                   Search Courses
                 </Nav.Link>
