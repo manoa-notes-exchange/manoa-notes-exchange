@@ -45,7 +45,7 @@ const resources = [
 const CoursePage = () => (
   <Container className="course-page py-4">
     <Breadcrumb>
-      <Breadcrumb.Item href="/courses">
+      <Breadcrumb.Item href="/search">
         Search Courses
       </Breadcrumb.Item>
 
