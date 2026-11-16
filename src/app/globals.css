@@ -235,3 +235,102 @@ footer {
     margin-left: 0 !important;
   }
 }
+
+/* Landing page. */
+.landing-hero {
+  padding: 3.25rem 0;
+  background-color: var(--manoa-medium-green);
+  color: var(--manoa-white);
+}
+
+.landing-hero-copy h1 {
+  max-width: 650px;
+  margin-bottom: 0.6rem;
+  font-size: clamp(2rem, 4vw, 2.7rem);
+  font-weight: 700;
+  line-height: 1.12;
+}
+
+.landing-hero-copy p {
+  max-width: 600px;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.landing-search-card {
+  border-radius: 0.35rem;
+}
+
+.landing-search-button {
+  color: var(--manoa-white);
+  background-color: var(--manoa-medium-green);
+  border-color: var(--manoa-medium-green);
+}
+
+.landing-search-button:hover,
+.landing-search-button:focus {
+  color: var(--manoa-white);
+  background-color: var(--manoa-green);
+  border-color: var(--manoa-green);
+}
+
+.landing-how-it-works {
+  padding: 2rem 0 2.5rem;
+}
+
+.landing-how-it-works h2 {
+  margin-bottom: 1.25rem;
+  font-size: 1.4rem;
+}
+
+.landing-step-icon {
+  margin-bottom: 0.45rem;
+  color: var(--manoa-medium-green);
+}
+
+.landing-how-it-works h3 {
+  margin-bottom: 0.35rem;
+  font-size: 1rem;
+}
+
+.landing-how-it-works p {
+  max-width: 340px;
+  margin: 0 auto;
+  font-size: 0.9rem;
+}
+
+.landing-community {
+  padding: 2rem 0 2.5rem;
+  background-color: #f7f8f9;
+  border-top: 1px solid #e8eaec;
+}
+
+.landing-community h2 {
+  margin-bottom: 0.4rem;
+  font-size: 1.35rem;
+}
+
+.landing-community h3 {
+  margin-bottom: 0.55rem;
+  font-size: 1rem;
+}
+
+.landing-community p {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+.landing-department-button {
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .landing-hero {
+    padding: 2.25rem 0;
+  }
+
+  .landing-how-it-works,
+  .landing-community {
+    padding: 1.75rem 0;
+  }
+}
