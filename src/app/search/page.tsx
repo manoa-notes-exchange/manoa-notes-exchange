@@ -39,7 +39,7 @@ const Search = async ({ searchParams }: { searchParams: Promise<SearchParams> })
 
   return (
     <main>
-      <Container>
+      <Container className='my-4'>
         <h1 className='my-3'>Search Courses</h1>
 
         <CourseSearchForm
