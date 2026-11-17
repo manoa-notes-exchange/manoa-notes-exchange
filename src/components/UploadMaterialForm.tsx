@@ -188,12 +188,12 @@ const UploadMaterialForm: React.FC = () => {
 
                 <Row className="pt-2">
                   <Col>
-                    <Button type="submit" variant="primary">
+                    <Button type="submit" variant="success">
                       Submit
                     </Button>
                   </Col>
                   <Col className="text-end">
-                    <Button type="button" variant="warning" onClick={() => reset(emptyForm)}>
+                    <Button type="button" variant="outline-secondary" onClick={() => reset(emptyForm)}>
                       Reset
                     </Button>
                   </Col>
