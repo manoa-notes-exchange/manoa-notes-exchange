@@ -24,13 +24,6 @@ model User {
   role     Role   @default(USER)
 }
 
-enum Condition {
-  excellent
-  good
-  fair
-  poor
-}
-
 model Course {
   id          Int     @id @default(autoincrement())
   courseCode  String
@@ -38,12 +31,4 @@ model Course {
   rating      Decimal @default(5.0)
   instructor  String[]
   semester    String[]
-}
-
-model Stuff {
-  id        Int       @id @default(autoincrement())
-  name      String
-  quantity  Int
-  condition Condition @default(good)
-  owner     String
 }

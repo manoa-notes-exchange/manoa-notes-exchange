@@ -18,7 +18,7 @@ const Footer = () => (
           <h5>EXPLORE</h5>
 
           <div>
-            <Link className="footer-link" href="/courses">
+            <Link className="footer-link" href="/search">
               Search Courses
             </Link>
           </div>
@@ -42,7 +42,7 @@ const Footer = () => (
           <div>
             <a
               className="footer-link"
-              href="#"
+              href="https://manoa-notes-exchange.github.io"
             >
               Project Home Page
             </a>
@@ -51,7 +51,7 @@ const Footer = () => (
           <div>
             <a
               className="footer-link"
-              href="#"
+              href="https://github.com/manoa-notes-exchange"
             >
               GitHub Organization
             </a>
