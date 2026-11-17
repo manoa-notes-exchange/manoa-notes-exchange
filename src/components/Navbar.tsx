@@ -22,7 +22,7 @@ const NavBar: React.FC = () => {
   return (
     <Navbar bg="dark" data-bs-theme="dark" expand="lg" className="floral-navbar">
       <Container>
-        <Navbar.Brand href="/">
+        <Navbar.Brand href={currentUser ? '/home' : '/'}>
           Manoa Notes Exchange
         </Navbar.Brand>
 
