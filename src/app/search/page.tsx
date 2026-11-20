@@ -18,23 +18,48 @@ const courseDepartment = (courseCode: string) => courseCode.trim().split(/\s+/)[
 
 const courseNumber = (courseCode: string) => courseCode.trim().split(/\s+/).slice(1).join(' ');
 
+// Puts semesters in calendar order: "Spring 2027" comes after "Fall 2026",
+// even though it sorts first alphabetically. Unknown terms go last in a year.
+const TERM_ORDER = ['Spring', 'Summer', 'Fall'];
+const semesterKey = (semester: string) => {
+  const [term = '', year = '0'] = semester.split(' ');
+  const termIndex = TERM_ORDER.indexOf(term);
+  return Number(year) * 10 + (termIndex === -1 ? TERM_ORDER.length : termIndex);
+};
+const sortSemesters = (semesters: string[]) => [...semesters].sort((a, b) => semesterKey(a) - semesterKey(b));
+
 const Search = async ({ searchParams }: { searchParams: Promise<SearchParams> }) => {
   const [params, courses] = await Promise.all([
     searchParams,
-    prisma.course.findMany({ orderBy: { id: 'asc' } }),
+    // Semesters come from offerings since #25. `select` names only the
+    // columns Search needs, so Course's old `instructor` and `semester`
+    // lists can be dropped later without breaking this page.
+    prisma.course.findMany({
+      orderBy: { id: 'asc' },
+      select: {
+        id: true,
+        courseCode: true,
+        courseName: true,
+        rating: true,
+        offerings: { select: { semester: true } },
+      },
+    }),
   ]);
+  const semestersOf = (course: (typeof courses)[number]) => sortSemesters(
+    [...new Set(course.offerings.map((offering) => offering.semester))],
+  );
   const departments = [...new Set(courses.map((course) => courseDepartment(course.courseCode)))].sort();
   const departmentParam = firstValue(params.department);
   const department = departmentParam === undefined ? (departments[0] ?? '') : departmentParam;
   const selectedCourseNumber = firstValue(params.courseNumber)?.trim() ?? '';
   const semester = firstValue(params.semester) ?? '';
-  const semesters = [...new Set(courses.flatMap((course) => course.semester))].sort();
+  const semesters = sortSemesters([...new Set(courses.flatMap(semestersOf))]);
 
   const filteredCourses = courses.filter((course) => (
     (department === '' || courseDepartment(course.courseCode) === department)
       && (selectedCourseNumber === ''
         || courseNumber(course.courseCode).toLowerCase().includes(selectedCourseNumber.toLowerCase()))
-      && (semester === '' || course.semester.includes(semester))
+      && (semester === '' || semestersOf(course).includes(semester))
   ));
 
   return (
@@ -62,7 +87,7 @@ const Search = async ({ searchParams }: { searchParams: Promise<SearchParams> })
                   courseCode={course.courseCode}
                   courseName={course.courseName}
                   rating={Number(course.rating)}
-                  semesters={course.semester}
+                  semesters={semestersOf(course)}
                 />
               </Col>
             ))}
