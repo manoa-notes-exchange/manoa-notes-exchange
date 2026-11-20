@@ -22,13 +22,41 @@ model User {
   email    String @unique
   password String
   role     Role   @default(USER)
+  // Set when this account belongs to an instructor (used by #35).
+  instructor Instructor?
 }
 
 model Course {
   id          Int     @id @default(autoincrement())
-  courseCode  String
+  courseCode  String  @unique
   courseName  String
   rating      Decimal @default(5.0)
+  // Old M1 lists, no longer used after #25 (offerings replace them).
+  // Kept for now because the live site's old code still asks for them
+  // until the merge deploys. Drop both in a later migration.
   instructor  String[]
   semester    String[]
+  offerings   Offering[]
+}
+
+// One person who teaches. userId links them to a site account (#35).
+model Instructor {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  userId    Int?       @unique
+  user      User?      @relation(fields: [userId], references: [id])
+  offerings Offering[]
+}
+
+// One course, taught by one instructor, in one semester.
+// "ICS 314, Fall 2026, two professors" is two Offering rows.
+model Offering {
+  id           Int        @id @default(autoincrement())
+  semester     String
+  courseId     Int
+  course       Course     @relation(fields: [courseId], references: [id])
+  instructorId Int
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+
+  @@unique([courseId, instructorId, semester])
 }
