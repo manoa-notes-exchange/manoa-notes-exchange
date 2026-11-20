@@ -24,6 +24,8 @@ model User {
   role     Role   @default(USER)
   // Set when this account belongs to an instructor (used by #35).
   instructor Instructor?
+  // Materials this account shared (#26).
+  materials  Material[]
 }
 
 model Course {
@@ -57,6 +59,24 @@ model Offering {
   course       Course     @relation(fields: [courseId], references: [id])
   instructorId Int
   instructor   Instructor @relation(fields: [instructorId], references: [id])
+  // Materials shared for this class (#26).
+  materials    Material[]
 
   @@unique([courseId, instructorId, semester])
+}
+
+// One shared link to course material (#26). We store links, never files.
+// #33 lists these on course pages; #34 and #36 point at them.
+model Material {
+  id          Int      @id @default(autoincrement())
+  title       String
+  type        String // Notes, Study guide, ... (checked by the form rules)
+  link        String // https only, from an allowed host
+  description String   @default("")
+  hidden      Boolean  @default(false) // #34's Remove sets this instead of deleting
+  createdAt   DateTime @default(now())
+  offeringId  Int // which class, term and instructor it belongs to
+  offering    Offering @relation(fields: [offeringId], references: [id])
+  uploaderId  Int // who shared it, taken from the session
+  uploader    User     @relation(fields: [uploaderId], references: [id])
 }
