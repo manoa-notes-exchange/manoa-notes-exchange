@@ -8,7 +8,7 @@ const Footer = () => (
         <Col xs={12} md={6} lg={5}>
           <h5>MANOA NOTES EXCHANGE</h5>
 
-          <p className="text-white-50 mb-0">
+          <p className="text-white mb-0">
             Free study materials for UH Mānoa courses, shared by students.
             A student project, not affiliated with the University of Hawaiʻi.
           </p>
@@ -61,7 +61,7 @@ const Footer = () => (
 
       <hr className="my-4" />
 
-      <p className="text-center text-white-50 mb-0">
+      <p className="text-center text-white mb-0">
         ICS 314, Fall 2026
       </p>
     </Container>
