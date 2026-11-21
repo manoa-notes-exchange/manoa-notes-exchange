@@ -1,13 +1,29 @@
-import { Col, Container, Row } from 'react-bootstrap';
+import Link from 'next/link';
+import { Card, CardBody, Col, Container, Row } from 'react-bootstrap';
 
-/* Render a Not Found page if the user enters a URL that doesn't match any route. */
+/** Displays a Not Found page when the requested route does not exist. */
 const NotFound = () => (
-  <Container className="py-3">
+  <Container className="py-5 flex-grow-1">
     <Row className="justify-content-center">
-      <Col xs={4} className="text-center">
-        <h2>
-          <p>Page not found</p>
-        </h2>
+      <Col xs={12} md={8} lg={6}>
+        <Card>
+          <CardBody className="text-center">
+            <h1 className="mb-3">
+              Page not found
+            </h1>
+
+            <p className="text-secondary mb-4">
+              The page you requested does not exist or may have been moved.
+            </p>
+
+            <Link
+              className="btn btn-success"
+              href="/search"
+            >
+              Search courses
+            </Link>
+          </CardBody>
+        </Card>
       </Col>
     </Row>
   </Container>

@@ -1,18 +1,32 @@
-import { Col, Container, Row } from 'react-bootstrap';
+import Link from 'next/link';
+import { Card, CardBody, Col, Container, Row } from 'react-bootstrap';
 
-/** Render a Not Authorized page if the user enters a URL that they don't have authorization for. */
+/** Displays a page when the user does not have permission to access a route. */
 const NotAuthorized = () => (
-  <main>
-    <Container className="py-3">
-      <Row className="justify-content-center">
-        <Col xs={4} className="text-center">
-          <h2>
-            <p>Not Authorized</p>
-          </h2>
-        </Col>
-      </Row>
-    </Container>
-  </main>
+  <Container className="py-5 flex-grow-1">
+    <Row className="justify-content-center">
+      <Col xs={12} md={8} lg={6}>
+        <Card>
+          <CardBody className="text-center">
+            <h1 className="mb-3">
+              Not authorized
+            </h1>
+
+            <p className="text-secondary mb-4">
+              You do not have permission to view this page.
+            </p>
+
+            <Link
+              className="btn btn-success"
+              href="/home"
+            >
+              Return to My Home
+            </Link>
+          </CardBody>
+        </Card>
+      </Col>
+    </Row>
+  </Container>
 );
 
 export default NotAuthorized;

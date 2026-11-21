@@ -2,7 +2,12 @@
 
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import {
+  Container,
+  Nav,
+  Navbar,
+  NavDropdown,
+} from 'react-bootstrap';
 import {
   BoxArrowRight,
   Lock,
@@ -20,7 +25,12 @@ const NavBar: React.FC = () => {
   const role = session?.user?.role;
 
   return (
-    <Navbar bg="dark" data-bs-theme="dark" expand="lg" className="floral-navbar">
+    <Navbar
+      bg="dark"
+      data-bs-theme="dark"
+      expand="lg"
+      className="floral-navbar"
+    >
       <Container>
         <Navbar.Brand href={currentUser ? '/home' : '/'}>
           Manoa Notes Exchange
@@ -71,13 +81,16 @@ const NavBar: React.FC = () => {
 
           <Nav>
             {session ? (
-              <NavDropdown id="login-dropdown" title={currentUser}>
+              <NavDropdown
+                id="login-dropdown"
+                title={currentUser}
+              >
                 <NavDropdown.Item
                   id="login-dropdown-sign-out"
-                  href="/api/auth/signout"
+                  href="/auth/signout"
                 >
                   <BoxArrowRight className="me-2" />
-                  Sign Out
+                  Sign out
                 </NavDropdown.Item>
 
                 <NavDropdown.Item
@@ -85,17 +98,20 @@ const NavBar: React.FC = () => {
                   href="/auth/change-password"
                 >
                   <Lock className="me-2" />
-                  Change Password
+                  Change password
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (
-              <NavDropdown id="login-dropdown" title="Login">
+              <NavDropdown
+                id="login-dropdown"
+                title="Sign in"
+              >
                 <NavDropdown.Item
                   id="login-dropdown-sign-in"
                   href="/auth/signin"
                 >
                   <PersonFill className="me-2" />
-                  Sign In
+                  Sign in
                 </NavDropdown.Item>
 
                 <NavDropdown.Item
@@ -103,7 +119,7 @@ const NavBar: React.FC = () => {
                   href="/auth/signup"
                 >
                   <PersonPlusFill className="me-2" />
-                  Sign Up
+                  Sign up
                 </NavDropdown.Item>
               </NavDropdown>
             )}
