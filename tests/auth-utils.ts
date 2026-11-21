@@ -76,7 +76,7 @@ async function authenticateWithUI(
     ]);
 
     // Click submit button and wait for navigation
-    const submitButton = page.getByRole('button', { name: /sign[ -]?in/i });
+    const submitButton = page.locator('form').getByRole('button', { name: /sign[ -]?in/i });
     if (!await submitButton.isVisible({ timeout: 1000 })) {
       // Try alternative selector if the first one doesn't work
       await page.getByRole('button', { name: /log[ -]?in/i }).click();
