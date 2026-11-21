@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Card, Col, Container, Row } from 'react-bootstrap';
+import { Card, CardBody, Col, Container, Row } from 'react-bootstrap';
 
 type AccountPageLayoutProps = {
   title: string;
@@ -18,9 +18,9 @@ const AccountPageLayout = ({
         </h1>
 
         <Card>
-          <Card.Body>
+          <CardBody>
             {children}
-          </Card.Body>
+          </CardBody>
         </Card>
       </Col>
     </Row>

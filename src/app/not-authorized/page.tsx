@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Card, Col, Container, Row } from 'react-bootstrap';
+import { Card, CardBody, Col, Container, Row } from 'react-bootstrap';
 
 /** Displays a page when the user does not have permission to access a route. */
 const NotAuthorized = () => (
@@ -7,7 +7,7 @@ const NotAuthorized = () => (
     <Row className="justify-content-center">
       <Col xs={12} md={8} lg={6}>
         <Card>
-          <Card.Body className="text-center">
+          <CardBody className="text-center">
             <h1 className="mb-3">
               Not authorized
             </h1>
@@ -22,7 +22,7 @@ const NotAuthorized = () => (
             >
               Return to My Home
             </Link>
-          </Card.Body>
+          </CardBody>
         </Card>
       </Col>
     </Row>
