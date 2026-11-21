@@ -37,6 +37,14 @@ const semesterKey = (semester: string) => {
   return Number(year) * 10 + (termOrder[term] ?? 0);
 };
 
+/**
+ * The red message under a field (#26). It gets d-block when there's an error, so it shows on its own:
+ * Safari and other WebKit browsers don't redraw Bootstrap's "input.is-invalid ~ message" rule.
+ */
+const FieldError = ({ message }: { message?: string }) => (
+  <div className={`invalid-feedback${message ? ' d-block' : ''}`}>{message}</div>
+);
+
 const UploadMaterialForm = ({ offerings }: { offerings: OfferingChoice[] }) => {
   const { status } = useSession();
   const {
@@ -101,7 +109,7 @@ const UploadMaterialForm = ({ offerings }: { offerings: OfferingChoice[] }) => {
                     {...register('title')}
                     className={`form-control ${errors.title ? 'is-invalid' : ''}`}
                   />
-                  <div className="invalid-feedback">{errors.title?.message}</div>
+                  <FieldError message={errors.title?.message} />
                 </Form.Group>
 
                 <Row>
@@ -124,7 +132,7 @@ const UploadMaterialForm = ({ offerings }: { offerings: OfferingChoice[] }) => {
                           <option key={c} value={c}>{c}</option>
                         ))}
                       </select>
-                      <div className="invalid-feedback">{errors.course?.message}</div>
+                      <FieldError message={errors.course?.message} />
                     </Form.Group>
                   </Col>
                   <Col md={4}>
@@ -144,7 +152,7 @@ const UploadMaterialForm = ({ offerings }: { offerings: OfferingChoice[] }) => {
                           <option key={s} value={s}>{s}</option>
                         ))}
                       </select>
-                      <div className="invalid-feedback">{errors.semester?.message}</div>
+                      <FieldError message={errors.semester?.message} />
                     </Form.Group>
                   </Col>
                   <Col md={4}>
@@ -161,7 +169,7 @@ const UploadMaterialForm = ({ offerings }: { offerings: OfferingChoice[] }) => {
                           <option key={o.id} value={o.id}>{o.instructor}</option>
                         ))}
                       </select>
-                      <div className="invalid-feedback">{errors.offeringId?.message}</div>
+                      <FieldError message={errors.offeringId?.message} />
                     </Form.Group>
                   </Col>
                 </Row>
@@ -179,7 +187,7 @@ const UploadMaterialForm = ({ offerings }: { offerings: OfferingChoice[] }) => {
                           <option key={type} value={type}>{type}</option>
                         ))}
                       </select>
-                      <div className="invalid-feedback">{errors.type?.message}</div>
+                      <FieldError message={errors.type?.message} />
                     </Form.Group>
                   </Col>
                 </Row>
@@ -193,7 +201,7 @@ const UploadMaterialForm = ({ offerings }: { offerings: OfferingChoice[] }) => {
                     {...register('link')}
                     className={`form-control ${errors.link ? 'is-invalid' : ''}`}
                   />
-                  <div className="invalid-feedback">{errors.link?.message}</div>
+                  <FieldError message={errors.link?.message} />
                   <Form.Text>
                     Links from {ALLOWED_SITES_TEXT}. Make sure the link is shared so anyone with it can view.
                   </Form.Text>
@@ -207,7 +215,7 @@ const UploadMaterialForm = ({ offerings }: { offerings: OfferingChoice[] }) => {
                     {...register('description')}
                     className={`form-control ${errors.description ? 'is-invalid' : ''}`}
                   />
-                  <div className="invalid-feedback">{errors.description?.message}</div>
+                  <FieldError message={errors.description?.message} />
                 </Form.Group>
 
                 <div className="form-check mb-3">
@@ -220,7 +228,7 @@ const UploadMaterialForm = ({ offerings }: { offerings: OfferingChoice[] }) => {
                   <label className="form-check-label" htmlFor="upload-own-work">
                     This is my own work. It is not a copy of a real exam or textbook pages.
                   </label>
-                  <div className="invalid-feedback">{errors.ownWork?.message}</div>
+                  <FieldError message={errors.ownWork?.message} />
                 </div>
 
                 <Row className="pt-2">
