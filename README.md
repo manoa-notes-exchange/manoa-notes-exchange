@@ -1,3 +1,9 @@
+# Mānoa Notes Exchange
+
+**Developers, start here:** [docs/SETUP.md](docs/SETUP.md) to run the app, [docs/BUILD-A-PAGE.md](docs/BUILD-A-PAGE.md) to add a page or feature, and [docs/DATABASE.md](docs/DATABASE.md) for how the site reads and saves data. Everything below this line still comes from the class template, so its database name and steps don't match ours; follow `docs/SETUP.md` instead. `index.md` is also the template's and describes pages we've since removed (Add, List and Edit Stuff). #37 replaces this README with our own.
+
+---
+
 [![ci-nextjs-application-template](https://github.com/ics-software-engineering/nextjs-application-template/actions/workflows/ci.yml/badge.svg)](https://github.com/ics-software-engineering/nextjs-application-template/actions/workflows/ci.yml)
 
 For details, please see http://ics-software-engineering.github.io/nextjs-application-template/.

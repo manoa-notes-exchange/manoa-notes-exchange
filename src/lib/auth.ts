@@ -48,6 +48,8 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     signOut: '/auth/signout',
   },
   callbacks: {
+    // The session carries the user's email and role, not their database id.
+    // To find the signed-in User row on the server, look it up by email (see addMaterial in dbActions.ts, #26).
     session({ session, token }) {
       return {
         ...session,
