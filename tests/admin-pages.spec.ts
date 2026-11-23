@@ -47,7 +47,7 @@ test('admin can add a semester offering and sees duplicate warning', async ({ ge
   ).toBeVisible({ timeout: 10000 });
 
   // Re-select the newly created instructor and attempt a duplicate submission
-  await adminPage.getByLabel('Instructor').selectOption({ label: uniqueInstructor });
+  await adminPage.getByLabel('Instructor', { exact: true }).selectOption({ label: uniqueInstructor });
   await adminPage.getByRole('button', { name: 'Add offering' }).click();
 
   await expect(
