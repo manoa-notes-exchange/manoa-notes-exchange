@@ -1,50 +1,39 @@
 # Mānoa Notes Exchange
 
-**Developers, start here:** [docs/SETUP.md](docs/SETUP.md) to run the app, [docs/BUILD-A-PAGE.md](docs/BUILD-A-PAGE.md) to add a page or feature, and [docs/DATABASE.md](docs/DATABASE.md) for how the site reads and saves data. Everything below this line still comes from the class template, so its database name and steps don't match ours; follow `docs/SETUP.md` instead. `index.md` is also the template's and describes pages we've since removed (Add, List and Edit Stuff). #37 replaces this README with our own.
+[![ci](https://github.com/manoa-notes-exchange/manoa-notes-exchange/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/manoa-notes-exchange/manoa-notes-exchange/actions/workflows/ci.yml)
 
----
+**Mānoa Notes Exchange** is a course-scoped notes repository for University of Hawaiʻi at Mānoa students to upload, browse, rate, and download lecture notes organized by course, semester, and instructor.
 
-[![ci-nextjs-application-template](https://github.com/ics-software-engineering/nextjs-application-template/actions/workflows/ci.yml/badge.svg)](https://github.com/ics-software-engineering/nextjs-application-template/actions/workflows/ci.yml)
+* **Project Home Page (User Guide & Developer Guide):** https://manoa-notes-exchange.github.io/
+* **Live Application:** https://manoa-notes-exchange.vercel.app/
 
-For details, please see http://ics-software-engineering.github.io/nextjs-application-template/.
+## Developer Documentation
 
-## Installation
+* **[docs/SETUP.md](docs/SETUP.md)** — Local environment setup, PostgreSQL database creation, `.env` configuration, Prisma migrations, seeding, and running the dev server.
+* **[docs/BUILD-A-PAGE.md](docs/BUILD-A-PAGE.md)** — Patterns and conventions for adding new pages, components, and server actions.
+* **[docs/DATABASE.md](docs/DATABASE.md)** — Prisma schema overview, models (`User`, `Course`, `Offering`, `Note`, `Rating`, `Flag`), and data access patterns.
 
-1. **Install PostgreSQL** and create a database for your app:
-	```bash
-	createdb nextjs-application-template
-	```
+## Quick Start
 
-2. **Clone this template** (or use the "Use this template" button on GitHub to create your own repo).
-
-3. **Install dependencies:**
-	```bash
-	npm install
-	```
-
-4. **Create your .env file:**
-	- Copy `sample.env` to `.env` and update the `DATABASE_URL` to match your PostgreSQL setup.
-
-5. **Run database migrations:**
-	```bash
-	npx prisma migrate dev
-	```
-
-6. **Generate Prisma client:**
-	```bash
-	npx prisma generate
-	```
-
-7. **Seed the database:**
-	```bash
-	npm run seed
-	```
-
-8. **Start the development server:**
-	```bash
-	npm run dev
-	```
-
-The app will be available at [http://localhost:3000](http://localhost:3000).
-
-See the [template documentation](http://ics-software-engineering.github.io/nextjs-application-template/) for more details and walkthroughs.
+1. Install PostgreSQL and create the local database (`manoa_notes_exchange`):
+   ```bash
+   createdb manoa_notes_exchange
+   ```
+2. Clone the repository and install dependencies:
+   ```bash
+   git clone [https://github.com/manoa-notes-exchange/manoa-notes-exchange.git](https://github.com/manoa-notes-exchange/manoa-notes-exchange.git)
+   cd manoa-notes-exchange
+   npm install
+   ```
+3. Copy `sample.env` to `.env` and update `DATABASE_URL` and `NEXTAUTH_SECRET` (see [docs/SETUP.md](docs/SETUP.md) for details).
+4. Run database migrations and seed the database:
+   ```bash
+   npx prisma migrate dev
+   npm run seed
+   ```
+5. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   Open http://localhost:3000 in your browser.
+   
