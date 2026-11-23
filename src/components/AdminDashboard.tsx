@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
+  Alert,
   Badge,
   Button,
   Card,
@@ -13,6 +15,7 @@ import {
   Table,
   Tabs,
 } from 'react-bootstrap';
+import { addOffering } from '@/lib/dbActions';
 
 interface ReportItem {
   id: number;
@@ -22,6 +25,24 @@ interface ReportItem {
   reason: string;
   status: 'Open' | 'Resolved';
 }
+
+interface CourseOption {
+  id: number;
+  courseCode: string;
+  courseName: string;
+}
+
+interface InstructorOption {
+  id: number;
+  name: string;
+}
+
+interface AdminDashboardProps {
+  courses: CourseOption[];
+  instructors: InstructorOption[];
+}
+
+const NEW_INSTRUCTOR_OPTION = '__new__';
 
 const sampleReports: ReportItem[] = [
   {
@@ -50,15 +71,58 @@ const sampleReports: ReportItem[] = [
   },
 ];
 
-const AdminDashboard: React.FC = () => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors }) => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<string>('reports');
-  const [course, setCourse] = useState<string>('ICS 314');
-  const [instructor, setInstructor] = useState<string>('Instructor B');
+  const [courseId, setCourseId] = useState<string>(
+    courses[0] ? String(courses[0].id) : '',
+  );
+  const [selectedInstructor, setSelectedInstructor] = useState<string>(
+    instructors[0] ? String(instructors[0].id) : NEW_INSTRUCTOR_OPTION,
+  );
+  const [newInstructorName, setNewInstructorName] = useState<string>('');
   const [semester, setSemester] = useState<string>('Spring');
   const [year, setYear] = useState<string>('2027');
+  const [feedback, setFeedback] = useState<{
+    variant: 'success' | 'danger';
+    message: string;
+  } | null>(null);
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
-  const handleAddOffering = (e: React.FormEvent) => {
+  const isAddingNewInstructor = selectedInstructor === NEW_INSTRUCTOR_OPTION;
+
+  const handleAddOffering = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFeedback(null);
+    setSubmitting(true);
+
+    try {
+      const result = await addOffering({
+        courseId: Number(courseId),
+        instructorId: isAddingNewInstructor ? undefined : Number(selectedInstructor),
+        newInstructorName: isAddingNewInstructor ? newInstructorName : undefined,
+        semester,
+        year,
+      });
+
+      if (!result.ok) {
+        setFeedback({ variant: 'danger', message: result.message });
+      } else {
+        setFeedback({
+          variant: 'success',
+          message: `Added offering for ${semester} ${year.trim()}.`,
+        });
+        setNewInstructorName('');
+        router.refresh();
+      }
+    } catch {
+      setFeedback({
+        variant: 'danger',
+        message: 'Something went wrong while adding the offering.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -147,18 +211,29 @@ const AdminDashboard: React.FC = () => {
           Add a semester offering
         </Card.Header>
         <Card.Body>
+          {feedback && (
+            <Alert
+              variant={feedback.variant}
+              dismissible
+              onClose={() => setFeedback(null)}
+            >
+              {feedback.message}
+            </Alert>
+          )}
           <Form onSubmit={handleAddOffering}>
             <Row className="g-3 align-items-end">
               <Col xs={12} md={3}>
                 <Form.Group controlId="offeringCourse">
                   <Form.Label>Course</Form.Label>
                   <Form.Select
-                    value={course}
-                    onChange={(e) => setCourse(e.target.value)}
+                    value={courseId}
+                    onChange={(e) => setCourseId(e.target.value)}
                   >
-                    <option value="ICS 314">ICS 314</option>
-                    <option value="ICS 211">ICS 211</option>
-                    <option value="MATH 307">MATH 307</option>
+                    {courses.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.courseCode}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -167,15 +242,35 @@ const AdminDashboard: React.FC = () => {
                 <Form.Group controlId="offeringInstructor">
                   <Form.Label>Instructor</Form.Label>
                   <Form.Select
-                    value={instructor}
-                    onChange={(e) => setInstructor(e.target.value)}
+                    value={selectedInstructor}
+                    onChange={(e) => setSelectedInstructor(e.target.value)}
                   >
-                    <option value="Instructor B">Instructor B</option>
-                    <option value="Instructor A">Instructor A</option>
-                    <option value="Instructor C">Instructor C</option>
+                    {instructors.map((inst) => (
+                      <option key={inst.id} value={inst.id}>
+                        {inst.name}
+                      </option>
+                    ))}
+                    <option value={NEW_INSTRUCTOR_OPTION}>
+                      + Add new instructor...
+                    </option>
                   </Form.Select>
                 </Form.Group>
               </Col>
+
+              {isAddingNewInstructor && (
+                <Col xs={12} md={3}>
+                  <Form.Group controlId="offeringNewInstructor">
+                    <Form.Label>New instructor name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="e.g. Cam Moore"
+                      value={newInstructorName}
+                      onChange={(e) => setNewInstructorName(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+              )}
 
               <Col xs={12} md={2}>
                 <Form.Group controlId="offeringSemester">
@@ -203,8 +298,13 @@ const AdminDashboard: React.FC = () => {
               </Col>
 
               <Col xs={12} md={2}>
-                <Button type="submit" variant="success" className="w-100">
-                  Add offering
+                <Button
+                  type="submit"
+                  variant="success"
+                  className="w-100"
+                  disabled={submitting}
+                >
+                  {submitting ? 'Adding...' : 'Add offering'}
                 </Button>
               </Col>
             </Row>
