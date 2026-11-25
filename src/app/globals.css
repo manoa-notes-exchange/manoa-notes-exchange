@@ -46,15 +46,25 @@ body {
   background-size: cover;
 }
 
+/* Unique floral navbar. */
 .floral-navbar {
+  min-height: 78px;
+  padding: 0.55rem 0;
+  background-image:
+    linear-gradient(
+      rgba(0, 45, 32, 0.82),
+      rgba(0, 45, 32, 0.82)
+    ),
+    url("/navbar-picture.png");
   border-bottom: 3px solid var(--manoa-light-green);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
 }
 
 .floral-footer {
   border-top: 3px solid var(--manoa-light-green);
 }
 
-/* Navbar text. */
+/* Navbar Bootstrap colors. */
 .navbar[data-bs-theme="dark"] {
   --bs-navbar-brand-color: var(--manoa-white);
   --bs-navbar-brand-hover-color: var(--manoa-light-green);
@@ -63,10 +73,32 @@ body {
   --bs-navbar-active-color: var(--manoa-white);
 }
 
-.floral-navbar .navbar-brand,
-.floral-navbar .nav-link,
-.floral-navbar .dropdown-toggle {
+/* Logo and website name. */
+.manoa-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0 !important;
   color: var(--manoa-white) !important;
+}
+
+.manoa-brand-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  background-color: var(--manoa-green);
+  border: 2px solid var(--manoa-white);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 3px rgba(183, 215, 200, 0.45),
+    0 4px 9px rgba(0, 0, 0, 0.4);
+}
+
+.manoa-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  color: var(--manoa-white);
   text-shadow:
     -1px -1px 0 black,
     1px -1px 0 black,
@@ -75,19 +107,72 @@ body {
     0 3px 5px rgba(0, 0, 0, 0.85);
 }
 
-.floral-navbar .navbar-brand {
+.manoa-brand-main {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
   font-weight: 700;
+  letter-spacing: 0.04rem;
 }
 
-.floral-navbar .navbar-brand:hover,
+.manoa-brand-subtitle {
+  margin-top: 0.25rem;
+  color: var(--manoa-white);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12rem;
+  text-transform: uppercase;
+}
+
+.manoa-brand:hover .manoa-brand-main,
+.manoa-brand:hover .manoa-brand-subtitle {
+  color: var(--manoa-light-green);
+}
+
+/* Navbar links. */
+.floral-navbar .nav-link,
+.floral-navbar .dropdown-toggle {
+  margin: 0 0.12rem;
+  padding: 0.55rem 0.85rem !important;
+  color: var(--manoa-white) !important;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  text-shadow:
+    -1px -1px 0 rgba(0, 0, 0, 0.85),
+    1px 1px 0 rgba(0, 0, 0, 0.85);
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
 .floral-navbar .nav-link:hover,
 .floral-navbar .dropdown-toggle:hover {
-  color: var(--manoa-light-green) !important;
+  color: var(--manoa-white) !important;
+  background-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
 }
 
-.navbar .nav-link.active {
-  font-weight: bold;
-  text-decoration: underline;
+.floral-navbar .nav-link.active {
+  color: var(--manoa-green) !important;
+  background-color: rgba(255, 255, 255, 0.94);
+  border-color: var(--manoa-white);
+  text-decoration: none;
+  text-shadow: none;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.24);
+}
+
+/* Account dropdown button. */
+.manoa-account-nav .dropdown-toggle {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+/* Mobile navbar toggle. */
+.manoa-navbar-toggle {
+  border-color: rgba(255, 255, 255, 0.65) !important;
 }
 
 /* Footer text. */
@@ -113,11 +198,17 @@ body {
 
 /* Dropdown menu. */
 .dropdown-menu {
+  padding: 0.45rem;
   background-color: var(--manoa-white);
+  border: 0;
+  border-radius: 0.65rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 }
 
 .dropdown-menu .dropdown-item {
+  padding: 0.55rem 0.75rem;
   color: black;
+  border-radius: 0.4rem;
 }
 
 .dropdown-menu .dropdown-item:hover,
@@ -333,8 +424,42 @@ body {
   font-weight: 600;
 }
 
+/* Tablet and collapsed navbar layout. */
+@media (max-width: 991px) {
+  .floral-navbar .navbar-collapse {
+    margin-top: 0.75rem;
+    padding: 0.65rem;
+    background-color: rgba(0, 45, 32, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 0.75rem;
+  }
+
+  .floral-navbar .nav-link,
+  .floral-navbar .dropdown-toggle {
+    margin: 0.15rem 0;
+  }
+
+  .manoa-account-nav {
+    margin-top: 0.25rem;
+  }
+}
+
 /* Mobile layout. */
 @media (max-width: 767px) {
+  .manoa-brand-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .manoa-brand-main {
+    font-size: 1.15rem;
+  }
+
+  .manoa-brand-subtitle {
+    font-size: 0.65rem;
+    letter-spacing: 0.08rem;
+  }
+
   .course-title {
     font-size: 2rem;
   }
