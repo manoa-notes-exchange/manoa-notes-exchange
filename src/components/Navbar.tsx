@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import {
   Container,
+  Image,
   Nav,
   Navbar,
   NavDropdown,
@@ -32,14 +33,36 @@ const NavBar: React.FC = () => {
       className="floral-navbar"
     >
       <Container>
-        <Navbar.Brand href={currentUser ? '/home' : '/'}>
-          Manoa Notes Exchange
+        <Navbar.Brand
+          href={currentUser ? '/home' : '/'}
+          className="manoa-brand"
+        >
+          <Image
+            src="/manoa-notes-icon.png"
+            width={48}
+            height={48}
+            alt="Manoa Notes Exchange logo"
+            className="manoa-brand-icon"
+          />
+
+          <span className="manoa-brand-text">
+            <span className="manoa-brand-main">
+              Mānoa
+            </span>
+
+            <span className="manoa-brand-subtitle">
+              Notes Exchange
+            </span>
+          </span>
         </Navbar.Brand>
 
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle
+          aria-controls="basic-navbar-nav"
+          className="manoa-navbar-toggle"
+        />
 
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto justify-content-start">
+          <Nav className="me-auto ms-lg-4 justify-content-start">
             {currentUser && (
               <>
                 <Nav.Link
@@ -79,11 +102,12 @@ const NavBar: React.FC = () => {
             )}
           </Nav>
 
-          <Nav>
+          <Nav className="manoa-account-nav">
             {session ? (
               <NavDropdown
                 id="login-dropdown"
                 title={currentUser}
+                align="end"
               >
                 <NavDropdown.Item
                   id="login-dropdown-sign-out"
@@ -105,6 +129,7 @@ const NavBar: React.FC = () => {
               <NavDropdown
                 id="login-dropdown"
                 title="Sign in"
+                align="end"
               >
                 <NavDropdown.Item
                   id="login-dropdown-sign-in"
