@@ -1,6 +1,7 @@
 'use server';
 
 import { hash } from 'bcrypt';
+import { Role } from '@prisma/client';
 import { ValidationError } from 'yup';
 import { prisma } from './prisma';
 import { auth } from './auth';
@@ -17,6 +18,7 @@ export async function createUser(credentials: { email: string; password: string 
     data: {
       email: credentials.email,
       password,
+      role: Role.USER,
     },
   });
 }
@@ -87,6 +89,7 @@ export async function addMaterial(form: unknown): Promise<AddMaterialResult> {
   });
   return { ok: true };
 }
+
 /** What addOffering tells the Admin form: saved, or a message to show. */
 export type AddOfferingResult = { ok: true } | { ok: false; message: string };
 
@@ -167,6 +170,202 @@ export async function addOffering(input: {
       courseId: course.id,
       instructorId: resolvedInstructorId,
       semester: formattedSemester,
+    },
+  });
+
+  return { ok: true };
+}
+
+/** What instructor actions tell the page: successful, or a message to show. */
+export type InstructorActionResult = { ok: true } | { ok: false; message: string };
+
+/**
+ * Allows an admin to connect a user account to an Instructor
+ * and change the account's role to INSTRUCTOR.
+ */
+export async function makeInstructor(
+  userId: number,
+  instructorId: number,
+): Promise<InstructorActionResult> {
+  const session = await auth();
+  const email = session?.user?.email;
+
+  if (!email) {
+    return { ok: false, message: 'Please sign in as an admin.' };
+  }
+
+  const admin = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!admin || admin.role !== Role.ADMIN) {
+    return {
+      ok: false,
+      message: 'Only admins can make an account an instructor.',
+    };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    return { ok: false, message: 'The selected user was not found.' };
+  }
+
+  const instructor = await prisma.instructor.findUnique({
+    where: { id: instructorId },
+  });
+
+  if (!instructor) {
+    return {
+      ok: false,
+      message: 'The selected instructor was not found.',
+    };
+  }
+
+  if (instructor.userId && instructor.userId !== user.id) {
+    return {
+      ok: false,
+      message: 'That instructor is already connected to another account.',
+    };
+  }
+
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: user.id },
+      data: {
+        role: Role.INSTRUCTOR,
+      },
+    }),
+
+    prisma.instructor.update({
+      where: { id: instructor.id },
+      data: {
+        userId: user.id,
+      },
+    }),
+  ]);
+
+  return { ok: true };
+}
+
+/**
+ * Checks whether the signed-in user can manage a material.
+ * Admins can manage every material.
+ * Instructors can manage materials only for offerings they teach.
+ */
+async function getMaterialManager(materialId: number) {
+  const session = await auth();
+  const email = session?.user?.email;
+
+  if (!email) {
+    return null;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  const material = await prisma.material.findUnique({
+    where: { id: materialId },
+    include: {
+      offering: {
+        include: {
+          instructor: true,
+        },
+      },
+    },
+  });
+
+  if (!material) {
+    return null;
+  }
+
+  const isAdmin = user.role === Role.ADMIN;
+
+  const teachesOffering =
+    user.role === Role.INSTRUCTOR
+    && material.offering.instructor.userId === user.id;
+
+  if (!isAdmin && !teachesOffering) {
+    return null;
+  }
+
+  return {
+    user,
+    material,
+  };
+}
+
+/**
+ * Marks a material as outdated.
+ * Only an admin or the instructor for the material's offering can do this.
+ */
+export async function markMaterialOutdated(
+  materialId: number,
+  note: string,
+): Promise<InstructorActionResult> {
+  const manager = await getMaterialManager(materialId);
+
+  if (!manager) {
+    return {
+      ok: false,
+      message: 'You are not allowed to manage this material.',
+    };
+  }
+
+  const trimmedNote = note.trim();
+
+  if (!trimmedNote) {
+    return {
+      ok: false,
+      message: 'Please enter a short explanation.',
+    };
+  }
+
+  if (trimmedNote.length > 300) {
+    return {
+      ok: false,
+      message: 'The explanation must be 300 characters or fewer.',
+    };
+  }
+
+  await prisma.material.update({
+    where: { id: manager.material.id },
+    data: {
+      outdatedNote: trimmedNote,
+      outdatedBy: manager.user.id,
+    },
+  });
+
+  return { ok: true };
+}
+
+/**
+ * Removes the outdated label and note from a material.
+ */
+export async function clearMaterialOutdated(
+  materialId: number,
+): Promise<InstructorActionResult> {
+  const manager = await getMaterialManager(materialId);
+
+  if (!manager) {
+    return {
+      ok: false,
+      message: 'You are not allowed to manage this material.',
+    };
+  }
+
+  await prisma.material.update({
+    where: { id: manager.material.id },
+    data: {
+      outdatedNote: null,
+      outdatedBy: null,
     },
   });
 

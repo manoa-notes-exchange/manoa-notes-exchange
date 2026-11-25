@@ -14,31 +14,34 @@ datasource db {
 
 enum Role {
   USER
+  INSTRUCTOR
   ADMIN
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
-  role     Role   @default(USER)
+  id                Int         @id @default(autoincrement())
+  email             String      @unique
+  password          String
+  role              Role        @default(USER)
   // Set when this account belongs to an instructor (used by #35).
-  instructor Instructor?
+  instructor        Instructor?
   // Materials this account shared (#26).
-  materials  Material[]
+  materials         Material[]  @relation("UploadedMaterials")
+  // Materials this account marked as outdated.
+  outdatedMaterials Material[]  @relation("OutdatedMaterials")
 }
 
 model Course {
-  id          Int     @id @default(autoincrement())
-  courseCode  String  @unique
-  courseName  String
-  rating      Decimal @default(5.0)
+  id         Int        @id @default(autoincrement())
+  courseCode String     @unique
+  courseName String
+  rating     Decimal    @default(5.0)
   // Old M1 lists, no longer used after #25 (offerings replace them).
   // Kept for now because the live site's old code still asks for them
   // until the merge deploys. Drop both in a later migration.
-  instructor  String[]
-  semester    String[]
-  offerings   Offering[]
+  instructor String[]
+  semester   String[]
+  offerings  Offering[]
 }
 
 // One person who teaches. userId links them to a site account (#35).
@@ -70,13 +73,19 @@ model Offering {
 model Material {
   id          Int      @id @default(autoincrement())
   title       String
-  type        String // Notes, Study guide, ... (checked by the form rules)
-  link        String // https only, from an allowed host
+  type        String
+  link        String
   description String   @default("")
-  hidden      Boolean  @default(false) // #34's Remove sets this instead of deleting
+  hidden      Boolean  @default(false)
   createdAt   DateTime @default(now())
-  offeringId  Int // which class, term and instructor it belongs to
-  offering    Offering @relation(fields: [offeringId], references: [id])
-  uploaderId  Int // who shared it, taken from the session
-  uploader    User     @relation(fields: [uploaderId], references: [id])
+
+  offeringId Int
+  offering   Offering @relation(fields: [offeringId], references: [id])
+
+  uploaderId Int
+  uploader   User @relation("UploadedMaterials", fields: [uploaderId], references: [id])
+
+  outdatedNote   String?
+  outdatedBy     Int?
+  outdatedByUser User?   @relation("OutdatedMaterials", fields: [outdatedBy], references: [id], onDelete: SetNull)
 }
