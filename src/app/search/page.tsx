@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
 import CourseCard from '@/components/CourseCard';
 import CourseSearchForm from '@/components/CourseSearchForm';
 import { Alert, Col, Container, Row } from 'react-bootstrap';
@@ -28,7 +29,7 @@ const semesterKey = (semester: string) => {
 const sortSemesters = (semesters: string[]) => [...semesters].sort((a, b) => semesterKey(a) - semesterKey(b));
 
 const Search = async ({ searchParams }: { searchParams: Promise<SearchParams> }) => {
-  const [params, courses] = await Promise.all([
+  const [params, courses, session] = await Promise.all([
     searchParams,
     // Semesters come from offerings since #25. `select` names only the
     // columns Search needs, so Course's old `instructor` and `semester`
@@ -43,7 +44,15 @@ const Search = async ({ searchParams }: { searchParams: Promise<SearchParams> })
         offerings: { select: { semester: true } },
       },
     }),
+    auth(),
   ]);
+  const savedCourses = session?.user?.email
+    ? await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { saved: { select: { courseCode: true } } },
+    })
+    : null;
+  const savedCourseCodes = new Set(savedCourses?.saved.map((course) => course.courseCode) ?? []);
   const semestersOf = (course: (typeof courses)[number]) => sortSemesters(
     [...new Set(course.offerings.map((offering) => offering.semester))],
   );
@@ -87,6 +96,7 @@ const Search = async ({ searchParams }: { searchParams: Promise<SearchParams> })
                   courseName={course.courseName}
                   rating={Number(course.rating)}
                   semesters={semestersOf(course)}
+                  isSaved={savedCourseCodes.has(course.courseCode)}
                 />
               </Col>
             ))}
