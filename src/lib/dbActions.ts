@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { hash } from 'bcrypt';
 import { Role } from '@prisma/client';
 import { ValidationError } from 'yup';
@@ -370,4 +371,85 @@ export async function clearMaterialOutdated(
   });
 
   return { ok: true };
+}
+
+export type ToggleBookmarkResult =
+  | { ok: true; bookmarked: boolean }
+  | { ok: false; message: string };
+
+/**
+ * Adds or removes a bookmark for the signed-in user.
+ */
+export async function toggleBookmark(
+  materialId: number,
+): Promise<ToggleBookmarkResult> {
+  const session = await auth();
+  const email = session?.user?.email;
+
+  if (!email) {
+    return {
+      ok: false,
+      message: 'Please sign in to bookmark materials.',
+    };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    return {
+      ok: false,
+      message: 'Your account could not be found.',
+    };
+  }
+
+  const material = await prisma.material.findUnique({
+    where: { id: materialId },
+  });
+
+  if (!material || material.hidden) {
+    return {
+      ok: false,
+      message: 'That material could not be found.',
+    };
+  }
+
+  const existingBookmark = await prisma.bookmark.findUnique({
+    where: {
+      userId_materialId: {
+        userId: user.id,
+        materialId: material.id,
+      },
+    },
+  });
+
+  if (existingBookmark) {
+    await prisma.bookmark.delete({
+      where: {
+        id: existingBookmark.id,
+      },
+    });
+
+    revalidatePath('/home');
+
+    return {
+      ok: true,
+      bookmarked: false,
+    };
+  }
+
+  await prisma.bookmark.create({
+    data: {
+      userId: user.id,
+      materialId: material.id,
+    },
+  });
+
+  revalidatePath('/home');
+
+  return {
+    ok: true,
+    bookmarked: true,
+  };
 }
