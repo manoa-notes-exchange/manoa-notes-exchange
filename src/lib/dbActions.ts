@@ -6,6 +6,7 @@ import { ValidationError } from 'yup';
 import { prisma } from './prisma';
 import { auth } from './auth';
 import { UploadMaterialSchema } from './validationSchemas';
+import { redirect } from 'next/navigation';
 
 /**
  * Creates a new user in the database.
@@ -370,4 +371,12 @@ export async function clearMaterialOutdated(
   });
 
   return { ok: true };
+}
+
+export async function toggleSavedCourse() {
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!email) {
+    redirect('/auth/signin');
+  }
 }

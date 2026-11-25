@@ -29,6 +29,8 @@ model User {
   materials         Material[]  @relation("UploadedMaterials")
   // Materials this account marked as outdated.
   outdatedMaterials Material[]  @relation("OutdatedMaterials")
+  // Courses this account saved
+  saved      Course[]
 }
 
 model Course {
@@ -42,6 +44,7 @@ model Course {
   instructor String[]
   semester   String[]
   offerings  Offering[]
+  user       User[]
 }
 
 // One person who teaches. userId links them to a site account (#35).

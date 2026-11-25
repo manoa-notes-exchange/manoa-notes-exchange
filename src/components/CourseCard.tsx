@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Badge, Button, Card } from 'react-bootstrap';
 import { Bookmark, BookmarkCheck } from 'react-bootstrap-icons';
+import { toggleSavedCourse } from '@/lib/dbActions';
 
 type CourseCardProps = {
   courseCode: string;
@@ -18,6 +19,7 @@ function CourseCard({ courseCode, courseName, rating, semesters }: CourseCardPro
   const currentUser = session?.user?.email;
 
   const toggleSaved = () => {
+    toggleSavedCourse();
     setSaved(!saved);
   };
 
@@ -58,18 +60,16 @@ function CourseCard({ courseCode, courseName, rating, semesters }: CourseCardPro
         >
           View materials
         </Button>
-        {currentUser && (
-          <Button
-            type="button"
-            variant={saved ? 'success' : 'outline-success'}
-            size="sm"
-            onClick={toggleSaved}
-            aria-pressed={saved}
-          >
-            {saved ? <BookmarkCheck aria-hidden="true" /> : <Bookmark aria-hidden="true" />}
-            <span className="ms-1">{saved ? 'Saved' : 'Save'}</span>
-          </Button>
-        )}
+        <Button
+          type="button"
+          variant={saved ? 'success' : 'outline-success'}
+          size="sm"
+          onClick={toggleSaved}
+          aria-pressed={saved}
+        >
+          {saved ? <BookmarkCheck aria-hidden="true" /> : <Bookmark aria-hidden="true" />}
+          <span className="ms-1">{saved ? 'Saved' : 'Save'}</span>
+        </Button>
       </Card.Footer>
     </Card>
   );

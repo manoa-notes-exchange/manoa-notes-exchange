@@ -2,7 +2,6 @@ import { prisma } from '@/lib/prisma';
 import CourseCard from '@/components/CourseCard';
 import CourseSearchForm from '@/components/CourseSearchForm';
 import { Alert, Col, Container, Row } from 'react-bootstrap';
-// import styles from './search.module.css';
 
 type SearchParams = {
   department?: string | string[];
