@@ -15,7 +15,7 @@ import {
   Table,
   Tabs,
 } from 'react-bootstrap';
-import { addOffering } from '@/lib/dbActions';
+import { addOffering, makeInstructor } from '@/lib/dbActions';
 
 interface ReportItem {
   id: number;
@@ -35,11 +35,23 @@ interface CourseOption {
 interface InstructorOption {
   id: number;
   name: string;
+  userId: number | null;
+}
+
+interface UserOption {
+  id: number;
+  email: string;
+  role: 'USER' | 'INSTRUCTOR' | 'ADMIN';
+  instructor: {
+    id: number;
+    name: string;
+  } | null;
 }
 
 interface AdminDashboardProps {
   courses: CourseOption[];
   instructors: InstructorOption[];
+  users: UserOption[];
 }
 
 const NEW_INSTRUCTOR_OPTION = '__new__';
@@ -71,7 +83,11 @@ const sampleReports: ReportItem[] = [
   },
 ];
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({
+  courses,
+  instructors,
+  users,
+}) => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<string>('reports');
   const [courseId, setCourseId] = useState<string>(
@@ -88,6 +104,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
     message: string;
   } | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [selectedInstructorByUser, setSelectedInstructorByUser] = useState<
+    Record<number, string>
+  >({});
+  const [promotingUserId, setPromotingUserId] = useState<number | null>(null);
+  const [userFeedback, setUserFeedback] = useState<{
+    variant: 'success' | 'danger';
+    message: string;
+  } | null>(null);
 
   const isAddingNewInstructor = selectedInstructor === NEW_INSTRUCTOR_OPTION;
 
@@ -122,6 +146,51 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleMakeInstructor = async (userId: number) => {
+    const instructorId = Number(selectedInstructorByUser[userId]);
+
+    if (!instructorId) {
+      setUserFeedback({
+        variant: 'danger',
+        message: 'Please select an instructor.',
+      });
+      return;
+    }
+
+    setUserFeedback(null);
+    setPromotingUserId(userId);
+
+    try {
+      const result = await makeInstructor(userId, instructorId);
+
+      if (!result.ok) {
+        setUserFeedback({
+          variant: 'danger',
+          message: result.message,
+        });
+      } else {
+        setUserFeedback({
+          variant: 'success',
+          message: 'The account is now connected to the instructor.',
+        });
+
+        setSelectedInstructorByUser((current) => ({
+          ...current,
+          [userId]: '',
+        }));
+
+        router.refresh();
+      }
+    } catch {
+      setUserFeedback({
+        variant: 'danger',
+        message: 'Something went wrong while updating the account.',
+      });
+    } finally {
+      setPromotingUserId(null);
     }
   };
 
@@ -190,7 +259,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
               ))}
             </tbody>
           </Table>
-          <p className="text-muted small mb-4">Reported materials, newest first</p>
+
+          <p className="text-muted small mb-4">
+            Reported materials, newest first
+          </p>
         </Tab>
 
         <Tab eventKey="courses" title="Courses and semesters">
@@ -200,9 +272,105 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
         </Tab>
 
         <Tab eventKey="users" title="Users">
-          <p className="text-muted py-3">
-            Manage registered users and admin roles here.
+          <p className="text-muted pt-3">
+            Connect registered accounts to existing instructors.
           </p>
+
+          {userFeedback && (
+            <Alert
+              variant={userFeedback.variant}
+              dismissible
+              onClose={() => setUserFeedback(null)}
+            >
+              {userFeedback.message}
+            </Alert>
+          )}
+
+          <Table responsive hover className="align-middle">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Linked instructor</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {users.map((user) => {
+                const availableInstructors = instructors.filter(
+                  (instructor) => (
+                    instructor.userId === null
+                    || instructor.userId === user.id
+                  ),
+                );
+
+                return (
+                  <tr key={user.id}>
+                    <td>{user.email}</td>
+
+                    <td>
+                      {user.role === 'USER' ? 'Student' : user.role}
+                    </td>
+
+                    <td>
+                      {user.instructor?.name ?? 'None'}
+                    </td>
+
+                    <td>
+                      {user.role === 'USER' ? (
+                        <div className="d-flex flex-column flex-md-row gap-2">
+                          <Form.Select
+                            aria-label={`Select instructor for ${user.email}`}
+                            value={selectedInstructorByUser[user.id] ?? ''}
+                            onChange={(e) => {
+                              setSelectedInstructorByUser((current) => ({
+                                ...current,
+                                [user.id]: e.target.value,
+                              }));
+                            }}
+                          >
+                            <option value="">
+                              Select instructor
+                            </option>
+
+                            {availableInstructors.map((instructor) => (
+                              <option
+                                key={instructor.id}
+                                value={instructor.id}
+                              >
+                                {instructor.name}
+                              </option>
+                            ))}
+                          </Form.Select>
+
+                          <Button
+                            type="button"
+                            variant="success"
+                            disabled={
+                              promotingUserId === user.id
+                              || !selectedInstructorByUser[user.id]
+                            }
+                            onClick={() => handleMakeInstructor(user.id)}
+                          >
+                            {promotingUserId === user.id
+                              ? 'Updating...'
+                              : 'Make instructor'}
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-muted">
+                          {user.role === 'INSTRUCTOR'
+                            ? 'Already assigned'
+                            : 'Admin account'}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
         </Tab>
       </Tabs>
 
@@ -210,6 +378,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
         <Card.Header className="bg-light fw-semibold">
           Add a semester offering
         </Card.Header>
+
         <Card.Body>
           {feedback && (
             <Alert
@@ -220,11 +389,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
               {feedback.message}
             </Alert>
           )}
+
           <Form onSubmit={handleAddOffering}>
             <Row className="g-3 align-items-end">
               <Col xs={12} md={3}>
                 <Form.Group controlId="offeringCourse">
                   <Form.Label>Course</Form.Label>
+
                   <Form.Select
                     value={courseId}
                     onChange={(e) => setCourseId(e.target.value)}
@@ -241,6 +412,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
               <Col xs={12} md={3}>
                 <Form.Group controlId="offeringInstructor">
                   <Form.Label>Instructor</Form.Label>
+
                   <Form.Select
                     value={selectedInstructor}
                     onChange={(e) => setSelectedInstructor(e.target.value)}
@@ -250,6 +422,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
                         {inst.name}
                       </option>
                     ))}
+
                     <option value={NEW_INSTRUCTOR_OPTION}>
                       + Add new instructor...
                     </option>
@@ -261,6 +434,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
                 <Col xs={12} md={3}>
                   <Form.Group controlId="offeringNewInstructor">
                     <Form.Label>New instructor name</Form.Label>
+
                     <Form.Control
                       type="text"
                       placeholder="e.g. Cam Moore"
@@ -275,6 +449,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
               <Col xs={12} md={2}>
                 <Form.Group controlId="offeringSemester">
                   <Form.Label>Semester</Form.Label>
+
                   <Form.Select
                     value={semester}
                     onChange={(e) => setSemester(e.target.value)}
@@ -289,6 +464,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ courses, instructors })
               <Col xs={12} md={2}>
                 <Form.Group controlId="offeringYear">
                   <Form.Label>Year</Form.Label>
+
                   <Form.Control
                     type="text"
                     value={year}
