@@ -31,7 +31,6 @@ model User {
   outdatedMaterials Material[]  @relation("OutdatedMaterials")
   // Courses this account saved
   saved      Course[]
-  bookmarks         Bookmark[]
 }
 
 model Course {
@@ -91,19 +90,5 @@ model Material {
 
   outdatedNote   String?
   outdatedBy     Int?
-  outdatedByUser User?      @relation("OutdatedMaterials", fields: [outdatedBy], references: [id], onDelete: SetNull)
-  bookmarks      Bookmark[]
-}
-
-model Bookmark {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now())
-  userId     Int
-  materialId Int
-
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, materialId])
-  @@index([userId])
+  outdatedByUser User?   @relation("OutdatedMaterials", fields: [outdatedBy], references: [id], onDelete: SetNull)
 }

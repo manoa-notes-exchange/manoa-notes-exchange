@@ -10,8 +10,7 @@ import {
   Form,
   Row,
 } from 'react-bootstrap';
-import { Flag, Star } from 'react-bootstrap-icons';
-import BookmarkButton from '@/components/BookmarkButton';
+import { Bookmark, Flag, Star } from 'react-bootstrap-icons';
 
 const resources = [
   {
@@ -105,7 +104,7 @@ const CoursePage = () => (
         </Row>
 
         {resources.map((resource) => (
-          <Card className="resource-card mb-3" data-testid="material-card" key={resource.id}>
+          <Card className="resource-card mb-3" key={resource.id}>
             <Card.Body>
               <div className="d-flex justify-content-between align-items-start">
                 <div>
@@ -132,10 +131,10 @@ const CoursePage = () => (
                   {resource.rating}
                 </span>
 
-                <BookmarkButton
-                  materialId={resource.id}
-                  initialBookmarked={false}
-                />
+                <Button className="resource-button" variant="outline-success">
+                  <Bookmark className="me-1" />
+                  Bookmark
+                </Button>
 
                 <Button className="resource-button" variant="outline-success">
                   <Star className="me-1" />
