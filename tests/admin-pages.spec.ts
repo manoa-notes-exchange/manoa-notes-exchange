@@ -36,9 +36,9 @@ test('admin can add a semester offering and sees duplicate warning', async ({ ge
   ).toBeVisible({ timeout: 10000 });
 
   // Add a new instructor inline and create a new offering
-  await adminPage.getByLabel('Instructor').selectOption('__new__');
+  await adminPage.getByLabel('Instructor', { exact: true }).selectOption('__new__');
   await adminPage.getByLabel('New instructor name').fill(uniqueInstructor);
-  await adminPage.getByLabel('Semester', { exact: true}).selectOption('Fall');
+  await adminPage.getByLabel('Semester', { exact: true }).selectOption('Fall');
   await adminPage.getByLabel('Year').fill('2028');
   await adminPage.getByRole('button', { name: 'Add offering' }).click();
 

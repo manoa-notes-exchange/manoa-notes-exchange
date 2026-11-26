@@ -67,6 +67,47 @@ const HomePage = async () => {
       || 'No offerings listed',
   })) ?? [];
 
+  const user = await prisma.user.findUnique({
+    where: {
+      email: currentUser,
+    },
+    select: {
+      bookmarks: {
+        where: {
+          material: {
+            hidden: false,
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        select: {
+          id: true,
+          material: {
+            select: {
+              id: true,
+              title: true,
+              link: true,
+              offering: {
+                select: {
+                  semester: true,
+                  course: {
+                    select: {
+                      id: true,
+                      courseCode: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const bookmarks = user?.bookmarks ?? [];
+
   return (
     <div className="container py-4 flex-grow-1">
       <h1 className="display-5">
@@ -162,19 +203,34 @@ const HomePage = async () => {
             </div>
 
             <div className="card-body p-0">
-              {bookmarks.map((bookmark) => (
-                <div
-                  className="border-bottom p-3"
-                  key={bookmark.id}
-                >
-                  <Link
-                    className="text-success"
-                    href="/courses"
+              {bookmarks.length === 0 ? (
+                <p className="text-muted p-3 mb-0">
+                  You have not bookmarked any materials yet.
+                </p>
+              ) : (
+                bookmarks.map((bookmark) => (
+                  <div
+                    className="border-bottom p-3"
+                    data-testid="home-bookmark"
+                    key={bookmark.id}
                   >
-                    {bookmark.title}
-                  </Link>
-                </div>
-              ))}
+                    <a
+                      className="text-success"
+                      href={bookmark.material.link}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {bookmark.material.title}
+                    </a>
+
+                    <div className="small text-secondary mt-1">
+                      {bookmark.material.offering.course.courseCode}
+                      {' · '}
+                      {bookmark.material.offering.semester}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
