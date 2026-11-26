@@ -420,6 +420,8 @@ export async function toggleSavedCourse(courseCode: string): Promise<ToggleSaved
     },
   });
   return { ok: true, saved };
+}
+
 export type ToggleBookmarkResult =
   | { ok: true; bookmarked: boolean }
   | { ok: false; message: string };

@@ -30,17 +30,6 @@ const updates = [
   },
 ];
 
-const bookmarks = [
-  {
-    id: 1,
-    title: 'Git branching and pull request steps',
-  },
-  {
-    id: 2,
-    title: 'Big-O cheat sheet',
-  },
-];
-
 const HomePage = async () => {
   const session = await auth();
 
@@ -49,7 +38,7 @@ const HomePage = async () => {
   }
 
   const currentUser = session.user.email;
-  const user = await prisma.user.findUnique({
+  const savedUser = await prisma.user.findUnique({
     where: { email: currentUser },
     select: {
       saved: {
@@ -61,7 +50,7 @@ const HomePage = async () => {
       },
     },
   });
-  const savedCourses = user?.saved.map((course) => ({
+  const savedCourses = savedUser?.saved.map((course) => ({
     course: course.courseCode,
     semester: [...new Set(course.offerings.map((offering) => offering.semester))].join(', ')
       || 'No offerings listed',
