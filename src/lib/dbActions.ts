@@ -373,6 +373,55 @@ export async function clearMaterialOutdated(
   return { ok: true };
 }
 
+export type ToggleSavedCourseResult =
+  | { ok: true; saved: boolean }
+  | { ok: false; message: string };
+
+/** Toggles a course in the signed-in user's saved courses. */
+export async function toggleSavedCourse(courseCode: string): Promise<ToggleSavedCourseResult> {
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!email) {
+    return { ok: false, message: 'Please sign in to save courses.' };
+  }
+
+  if (typeof courseCode !== 'string' || !courseCode.trim()) {
+    return { ok: false, message: 'Choose a valid course to save.' };
+  }
+  const normalizedCourseCode = courseCode.trim();
+
+  const [user, course] = await Promise.all([
+    prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        saved: {
+          where: { courseCode: normalizedCourseCode },
+          select: { id: true },
+        },
+      },
+    }),
+    prisma.course.findUnique({ where: { courseCode: normalizedCourseCode }, select: { id: true } }),
+  ]);
+  if (!user) {
+    return { ok: false, message: 'Your account could not be found. Please sign in again.' };
+  }
+  if (!course) {
+    return { ok: false, message: 'That course could not be found.' };
+  }
+
+  const saved = user.saved.length === 0;
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      saved: saved
+        ? { connect: { id: course.id } }
+        : { disconnect: { id: course.id } },
+    },
+  });
+  return { ok: true, saved };
+}
+
 export type ToggleBookmarkResult =
   | { ok: true; bookmarked: boolean }
   | { ok: false; message: string };

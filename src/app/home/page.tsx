@@ -30,24 +30,6 @@ const updates = [
   },
 ];
 
-const savedCourses = [
-  {
-    id: 1,
-    course: 'ICS 314',
-    semester: 'Fall 2026',
-  },
-  {
-    id: 2,
-    course: 'ICS 311',
-    semester: 'Fall 2026',
-  },
-  {
-    id: 3,
-    course: 'ICS 321',
-    semester: 'Fall 2026',
-  },
-];
-
 const HomePage = async () => {
   const session = await auth();
 
@@ -56,6 +38,23 @@ const HomePage = async () => {
   }
 
   const currentUser = session.user.email;
+  const savedUser = await prisma.user.findUnique({
+    where: { email: currentUser },
+    select: {
+      saved: {
+        orderBy: { courseCode: 'asc' },
+        select: {
+          courseCode: true,
+          offerings: { select: { semester: true } },
+        },
+      },
+    },
+  });
+  const savedCourses = savedUser?.saved.map((course) => ({
+    course: course.courseCode,
+    semester: [...new Set(course.offerings.map((offering) => offering.semester))].join(', ')
+      || 'No offerings listed',
+  })) ?? [];
 
   const user = await prisma.user.findUnique({
     where: {
@@ -159,7 +158,7 @@ const HomePage = async () => {
             </div>
 
             <div className="card-body p-0">
-              {savedCourses.map((savedCourse) => (
+              {savedCourses.length > 0 ? savedCourses.map((savedCourse) => (
                 <div
                   className="
                     d-flex
@@ -168,7 +167,7 @@ const HomePage = async () => {
                     border-bottom
                     p-3
                   "
-                  key={savedCourse.id}
+                  key={savedCourse.course}
                 >
                   <Link
                     className="text-success"
@@ -181,7 +180,9 @@ const HomePage = async () => {
                     {savedCourse.semester}
                   </span>
                 </div>
-              ))}
+              )) : (
+                <p className="text-secondary p-3 mb-0">You have not saved any courses yet.</p>
+              )}
             </div>
           </div>
 
