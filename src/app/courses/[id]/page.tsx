@@ -39,7 +39,7 @@ const CoursePage = async ({ params }: CoursePageProps) => {
       offerings: {
         select: {
           semester: true,
-          instructor: { select: { name: true } },
+          instructor: { select: { name: true, userId: true } },
           materials: {
             // Hidden materials never show (#26).
             where: { hidden: false },
@@ -75,6 +75,16 @@ const CoursePage = async ({ params }: CoursePageProps) => {
     : [];
   const bookmarkedIds = new Set(bookmarks.map((bookmark) => bookmark.materialId));
 
+  // #38: who may mark materials outdated here. Admins may manage every material;
+  // an instructor only the materials in offerings they teach (same rule as #35's
+  // getMaterialManager, which checks again on the server when they click).
+  const viewer = email
+    ? await prisma.user.findUnique({ where: { email }, select: { id: true, role: true } })
+    : null;
+  const canManage = (instructorUserId: number | null) => !!viewer && (
+    viewer.role === 'ADMIN' || (viewer.role === 'INSTRUCTOR' && instructorUserId === viewer.id)
+  );
+
   // Every material for this course, newest first, labelled with its offering.
   // Only plain values go to CourseDetail (no dates or Decimals).
   const materials = course.offerings
@@ -82,9 +92,10 @@ const CoursePage = async ({ params }: CoursePageProps) => {
       material,
       semester: offering.semester,
       instructor: offering.instructor.name,
+      instructorUserId: offering.instructor.userId,
     })))
     .sort((a, b) => b.material.createdAt.getTime() - a.material.createdAt.getTime())
-    .map(({ material, semester, instructor }) => ({
+    .map(({ material, semester, instructor, instructorUserId }) => ({
       id: material.id,
       title: material.title,
       type: material.type,
@@ -95,6 +106,7 @@ const CoursePage = async ({ params }: CoursePageProps) => {
       instructor,
       host: linkHost(material.link),
       bookmarked: bookmarkedIds.has(material.id),
+      canManage: canManage(instructorUserId),
     }));
 
   // Semester -> instructors, for the "Offered in" sidebar.

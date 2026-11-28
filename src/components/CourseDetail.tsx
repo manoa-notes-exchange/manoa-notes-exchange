@@ -15,8 +15,9 @@ import {
   Form,
   Row,
 } from 'react-bootstrap';
-import { Flag, Star } from 'react-bootstrap-icons';
+import { ExclamationTriangleFill, Flag, Star } from 'react-bootstrap-icons';
 import BookmarkButton from '@/components/BookmarkButton';
+import MarkOutdatedButton from '@/components/MarkOutdatedButton';
 
 export type CourseDetailMaterial = {
   id: number;
@@ -29,6 +30,7 @@ export type CourseDetailMaterial = {
   instructor: string;
   host: string;
   bookmarked: boolean;
+  canManage: boolean; // #38: this viewer may mark it outdated
 };
 
 type CourseDetailProps = {
@@ -140,11 +142,12 @@ const CourseDetail = ({
                     )}
                     {/* Set by an instructor or admin (#35). */}
                     {material.outdatedNote && (
-                      <Card.Text className="small text-warning-emphasis mb-0">
-                        Marked outdated:
+                      <div className="alert alert-warning small py-1 px-2 mt-2 mb-0" role="note">
+                        <ExclamationTriangleFill className="me-1" aria-hidden="true" />
+                        <strong>Outdated:</strong>
                         {' '}
                         {material.outdatedNote}
-                      </Card.Text>
+                      </div>
                     )}
                   </div>
                   <Badge className="resource-badge">{material.type}</Badge>
@@ -165,6 +168,11 @@ const CourseDetail = ({
                     Report
                   </Button>
                 </div>
+
+                {/* #38: only the offering's instructor and admins see this. */}
+                {material.canManage && (
+                  <MarkOutdatedButton materialId={material.id} outdatedNote={material.outdatedNote} />
+                )}
               </Card.Body>
             </Card>
           ))}

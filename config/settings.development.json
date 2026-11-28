@@ -1,7 +1,8 @@
 {
   "defaultAccounts": [
     { "email": "admin@foo.com", "password": "changeme", "role": "ADMIN" },
-    { "email": "john@foo.com", "password": "changeme" }
+    { "email": "john@foo.com", "password": "changeme" },
+    { "email": "instructor@foo.com", "password": "changeme", "role": "INSTRUCTOR", "instructor": "Instructor A" }
   ],
   "defaultCourses": [
     { "courseCode": "ICS 314", "courseName": "Software Engineering I", "rating": 4.5 },

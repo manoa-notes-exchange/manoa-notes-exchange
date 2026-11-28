@@ -25,13 +25,23 @@ const PrivacyPage = () => (
                   stored in plain text.
                 </li>
                 <li className="mb-3">
-                  <strong>Uploaded Materials:</strong> Any notes, study guides,
-                  or course files you choose to upload so other students can
-                  view and share them.
+                  <strong>Shared Links:</strong> The title, type, description and
+                  link of each material you share, so other students can find it.
+                  We store links only, never the files themselves.
+                </li>
+                <li className="mb-3">
+                  <strong>Saved Courses and Bookmarks:</strong> The courses you save
+                  and the materials you bookmark, so My Home can show them to you.
+                </li>
+                <li className="mb-3">
+                  <strong>Instructor Notes:</strong> If an instructor marks a
+                  material as outdated, their note and account are saved with it.
                 </li>
               </ul>
 
               <p className="mt-4 mb-0">
+                A sign-in cookie keeps you signed in between pages.
+                {' '}
                 <strong>Nothing else is collected or stored.</strong> We do not
                 track you across other sites, sell your information, or store any
                 additional personal data.

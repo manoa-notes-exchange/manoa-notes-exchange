@@ -3,33 +3,6 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-const updates = [
-  {
-    id: 1,
-    title: 'Midterm 1 review: JavaScript and ESLint',
-    course: 'ICS 314',
-    semester: 'Fall 2026',
-    rating: '★★★★★',
-    type: 'Study guide',
-  },
-  {
-    id: 2,
-    title: 'Dynamic programming worked examples',
-    course: 'ICS 311',
-    semester: 'Fall 2026',
-    rating: '★★★★☆',
-    type: 'Practice problems',
-  },
-  {
-    id: 3,
-    title: 'Lecture notes: SQL joins',
-    course: 'ICS 321',
-    semester: 'Fall 2026',
-    rating: '★★★★☆',
-    type: 'Notes',
-  },
-];
-
 const HomePage = async () => {
   const session = await auth();
 
@@ -57,6 +30,23 @@ const HomePage = async () => {
     semester: [...new Set(course.offerings.map((offering) => offering.semester))].join(', ')
       || 'No offerings listed',
   })) ?? [];
+
+  // #38: the newest real uploads across the student's saved courses, replacing the
+  // M1 sample list. Five at most: My Home is a summary, each course page has them all.
+  const savedCourseIds = savedCourses.map((course) => course.id);
+  const newInSaved = savedCourseIds.length === 0 ? [] : await prisma.material.findMany({
+    where: { hidden: false, offering: { courseId: { in: savedCourseIds } } },
+    orderBy: { createdAt: 'desc' },
+    take: 5,
+    select: {
+      id: true,
+      title: true,
+      type: true,
+      link: true,
+      outdatedNote: true,
+      offering: { select: { semester: true, course: { select: { id: true, courseCode: true } } } },
+    },
+  });
 
   const user = await prisma.user.findUnique({
     where: {
@@ -117,35 +107,47 @@ const HomePage = async () => {
             </div>
 
             <div className="card-body p-0">
-              {updates.map((update) => (
+              {newInSaved.length === 0 ? (
+                <p className="text-secondary p-3 mb-0">
+                  {savedCourses.length === 0 ? 'Nothing new yet. ' : 'No uploads in your saved courses yet. '}
+                  <Link className="text-success" href="/search">
+                    {savedCourses.length === 0 ? 'Save a course on Search' : 'Find more courses on Search'}
+                  </Link>
+                  {savedCourses.length === 0 ? ' to see its newest uploads here.' : '.'}
+                </p>
+              ) : newInSaved.map((material) => (
                 <div
-                  className="
-                    d-flex
-                    justify-content-between
-                    align-items-start
-                    border-bottom
-                    p-3
-                  "
-                  key={update.id}
+                  className="d-flex justify-content-between align-items-start border-bottom p-3"
+                  data-testid="home-new-material"
+                  key={material.id}
                 >
                   <div className="me-3">
                     <h5 className="mb-1">
-                      {update.title}
+                      {/* Opens in a new tab and passes nothing back to our page (#26 safety). */}
+                      <a
+                        className="text-success"
+                        href={material.link}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                      >
+                        {material.title}
+                      </a>
                     </h5>
 
                     <div className="text-secondary">
-                      {update.course}
+                      <Link className="text-secondary" href={`/courses/${material.offering.course.id}`}>
+                        {material.offering.course.courseCode}
+                      </Link>
                       {' · '}
-                      {update.semester}
-                      {' · '}
-                      <span className="text-warning">
-                        {update.rating}
-                      </span>
+                      {material.offering.semester}
+                      {material.outdatedNote && (
+                        <span className="badge bg-warning text-dark ms-2">Outdated</span>
+                      )}
                     </div>
                   </div>
 
                   <span className="badge bg-success">
-                    {update.type}
+                    {material.type}
                   </span>
                 </div>
               ))}
@@ -209,7 +211,7 @@ const HomePage = async () => {
                       className="text-success"
                       href={bookmark.material.link}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer nofollow"
                     >
                       {bookmark.material.title}
                     </a>

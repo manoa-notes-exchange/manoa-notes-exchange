@@ -11,6 +11,8 @@ import * as config from '../config/settings.development.json';
  * - It only adds rows that are missing. Every upsert has `update: {}`,
  *   so an existing row is never changed. In particular, a demo account
  *   whose password was changed keeps its new password (#38).
+ *   The one exception is the last step: it fills an EMPTY instructor link
+ *   for instructor@foo.com (#38), and never replaces an existing link.
  * - Each step waits for the one before it (`for ... of` with `await`),
  *   so offerings are only added after their course and instructor exist.
  */
@@ -73,6 +75,31 @@ async function main() {
         semester: offering.semester,
       },
     });
+  }
+
+  // #38: link demo accounts that name an instructor (instructor@foo.com -> Instructor A),
+  // so that account can mark its own offerings' materials outdated (#35).
+  // This only fills an empty link. If the instructor already belongs to another
+  // account, or this account is already another instructor, it warns and skips.
+  const instructorAccounts = config.defaultAccounts.filter(
+    (account): account is typeof account & { instructor: string } => 'instructor' in account,
+  );
+  for (const account of instructorAccounts) {
+    const user = await prisma.user.findUniqueOrThrow({ where: { email: account.email } });
+    const instructor = await prisma.instructor.findUnique({ where: { name: account.instructor } });
+    const alreadyLinked = await prisma.instructor.findUnique({ where: { userId: user.id } });
+    if (!instructor) {
+      console.warn(`  Warning: no instructor named ${account.instructor}, so ${account.email} was not linked`);
+    } else if (instructor.userId === user.id) {
+      console.log(`  Instructor link: ${account.email} is already ${account.instructor}`);
+    } else if (instructor.userId !== null) {
+      console.warn(`  Warning: ${account.instructor} already belongs to another account, so ${account.email} was not linked`);
+    } else if (alreadyLinked) {
+      console.warn(`  Warning: ${account.email} is already ${alreadyLinked.name}, so it was not linked to ${account.instructor}`);
+    } else {
+      await prisma.instructor.update({ where: { id: instructor.id }, data: { userId: user.id } });
+      console.log(`  Instructor link: ${account.email} -> ${account.instructor}`);
+    }
   }
 }
 
