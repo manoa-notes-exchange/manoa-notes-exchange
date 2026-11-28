@@ -44,6 +44,7 @@ const HomePage = async () => {
       saved: {
         orderBy: { courseCode: 'asc' },
         select: {
+          id: true,
           courseCode: true,
           offerings: { select: { semester: true } },
         },
@@ -51,6 +52,7 @@ const HomePage = async () => {
     },
   });
   const savedCourses = savedUser?.saved.map((course) => ({
+    id: course.id,
     course: course.courseCode,
     semester: [...new Set(course.offerings.map((offering) => offering.semester))].join(', ')
       || 'No offerings listed',
@@ -171,7 +173,7 @@ const HomePage = async () => {
                 >
                   <Link
                     className="text-success"
-                    href="/courses"
+                    href={`/courses/${savedCourse.id}`}
                   >
                     {savedCourse.course}
                   </Link>

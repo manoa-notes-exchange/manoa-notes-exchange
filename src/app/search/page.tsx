@@ -92,6 +92,7 @@ const Search = async ({ searchParams }: { searchParams: Promise<SearchParams> })
             {filteredCourses.map((course) => (
               <Col key={course.id}>
                 <CourseCard
+                  courseId={course.id}
                   courseCode={course.courseCode}
                   courseName={course.courseName}
                   rating={Number(course.rating)}

@@ -7,6 +7,7 @@ import { toggleSavedCourse } from '@/lib/dbActions';
 import { redirect } from 'next/navigation';
 
 type CourseCardProps = {
+  courseId: number; // #32: used to link "View materials" to /courses/<id>
   courseCode: string;
   courseName: string;
   rating: number;
@@ -14,7 +15,7 @@ type CourseCardProps = {
   isSaved: boolean;
 };
 
-function CourseCard({ courseCode, courseName, rating, semesters, isSaved }: CourseCardProps) {
+function CourseCard({ courseId, courseCode, courseName, rating, semesters, isSaved }: CourseCardProps) {
   const [saved, setSaved] = useState(isSaved);
   const [isPending, startTransition] = useTransition();
   const [saveMessage, setSaveMessage] = useState('');
@@ -65,7 +66,7 @@ function CourseCard({ courseCode, courseName, rating, semesters, isSaved }: Cour
           type="button"
           variant="success"
           size="sm"
-          href='/courses'
+          href={`/courses/${courseId}`}
         >
           View materials
         </Button>
